@@ -87,6 +87,20 @@ app.get('/deleteHabit/:id', (req, res) => {
     });
 });
 
+router.get('/habits/search', (req, res) => {
+    const searchTerm = req.query.q;
+
+    const sql = "SELECT * FROM habits WHERE name LIKE ?";
+    const values = [`%${searchTerm}%`];
+
+    db.query(sql, values, (err, results) => {
+        if (err) {
+            console.error('Search query failed:', err);
+            return res.status(500).send('Database error');
+        }
+        res.render('habits', { habits: results });
+    });
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

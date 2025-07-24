@@ -51,9 +51,23 @@ app.use(session({
 app.use(flash());
 
 //TO DO add middleware to check if user is logged in
-
+const checkAuthenticated = (req, res, next) => {
+    if (req.session.user) {
+        return next();
+    } else {
+        req.flash('error', 'Please log in to view this resource');
+        res.redirect('/login');
+    }
+};
 //TO DO add middleware to check if user is admin
-
+const checkAdmin = (req, res, next) => {
+    if (req.session.user.role === 'admin') {
+        return next();
+    } else {
+        req.flash('error', 'Access denied');
+        res.redirect('/');
+    }
+};
 
 const validateRegistration = (req, res, next) => {
     const { username, email, password, address, contact, role } = req.body;
@@ -87,7 +101,7 @@ app.get('/deleteHabit/:id', (req, res) => {
     });
 });
 
-router.get('/habits/search', (req, res) => {
+app.get('/habits/search', (req, res) => {
     const searchTerm = req.query.q;
 
     const sql = "SELECT * FROM habits WHERE name LIKE ?";

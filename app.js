@@ -87,6 +87,39 @@ const validateRegistration = (req, res, next) => {
 //TO DO define routes
 
 
+//update 
+app.get('/updateHabit/:id',checkAuthenticated, checkAdmin, (req,res) => {
+    const habitId = req.params.id;
+    const sql = 'SELECT * FROM habit WHERE habitId = ?';
+    connection.query(sql , [habitId], (error, results) => {
+        if (error) throw error;
+        if (results.length > 0) {
+            res.render('updateHabit', { habit: results[0] });
+        } else {
+            res.status(404).send('Habit not found');
+        }
+    });
+});
+    
+app.post('/updateHabit/:id', upload.single('image'), (req, res) => {
+    const habitId = req.params.id;
+    const { habitname, feeling, description } = req.body;
+    let image  = req.body.currentImage; 
+    if (req.file) { 
+        image = req.file.filename; 
+    } 
+
+    const sql = 'UPDATE habit SET habitName = ? , feeling = ?, description = ?, image =? WHERE habitId = ?';
+    connection.query(sql, [habitname, feeling, description, image, habitId], (error, results) => {
+        if (error) {
+            console.error("Error updating habit:", error);
+            res.status(500).send('Error updating habit');
+        } else {
+            res.redirect('/inventory');
+        }
+    });
+});
+
 app.get('/deleteHabit/:id', (req, res) => {
     const habitId = req.params.id;
 

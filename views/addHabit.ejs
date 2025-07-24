@@ -42,13 +42,28 @@
       </div>
 
       <div class="mb-3">
-        <label for="quantity" class="form-label">Habit type</label>
-        <input type="number" class="form-control" id="quantity" name="quantity" min="0" step="1" required>
+        <label for="type" class="form-label">Habit type</label>
+        <input type="text" class="form-control" id="type" name="type" required>
       </div>
 
       <div class="mb-3">
-        <label for="price" class="form-label"></label>
-        <input type="number" class="form-control" id="price" name="price" min="0" step="0.01" required>
+        <label for="date" class="form-label">Date</label>
+        <input type="date" class="form-control" id="date" name="date"  required>
+      </div>
+
+      <div class="mb-4">
+              <label for="description" class="form-label">Description</label>
+              <input type="text" class="form-control" id="description" name="description" required>
+      </div>
+
+      <div class="mb-4">
+              <label for="feeling" class="form-label">Feelings</label> //dropdown
+              <input type="text" class="form-control" id="feeling" name="feeling" required> 
+                  <select name="type" id="type">
+                      <option value="happy">Happy</option>
+                      <option value="neutral">Neutral</option>
+                      <option value="sad">Sad</option>
+                  </select>
       </div>
 
       <div class="mb-4">

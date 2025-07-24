@@ -102,6 +102,35 @@ router.get('/habits/search', (req, res) => {
     });
 });
 
+// route to add habit
+app.get('/addHabit', checkAuthenticated, checkAdmin, (req, res) => {
+    res.render('addHabit', {user: req.session.user } ); 
+});
+
+app.post('/addHabit', upload.single('image'),  (req, res) => {
+    // Extract product data from the request body
+    const { name, quantity, price} = req.body;
+    let image;
+    if (req.file) {
+        image = req.file.filename; // Save only the filename
+    } else {
+        image = null;
+    }
+
+    const sql = 'INSERT INTO products (productName, quantity, price, image) VALUES (?, ?, ?, ?)';
+    // Insert the new product into the database
+    connection.query(sql , [name, quantity, price, image], (error, results) => {
+        if (error) {
+            // Handle any error that occurs during the database operation
+            console.error("Error adding habit:", error);
+            res.status(500).send('Error adding habit');
+        } else {
+            // Send a success response
+            res.redirect('/habitList');
+        }
+    });
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 

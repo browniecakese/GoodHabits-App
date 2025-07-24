@@ -72,21 +72,6 @@ const validateRegistration = (req, res, next) => {
 
 //TO DO define routes
 
-
-app.get('/deleteHabit/:id', (req, res) => {
-    const habitId = req.params.id;
-
-    connection.query('DELETE FROM products WHERE habitId = ?', [habitId], (error, results) => {
-        if (error) {
-            console.error("Error deleting habit:", error);
-            res.status(500).send('Error deleting habit');
-        } else {
-            // Send a success response
-            res.redirect('/habitlist');
-        }
-    });
-});
-
 router.get('/habits/search', (req, res) => {
     const searchTerm = req.query.q;
 
@@ -127,6 +112,35 @@ app.post('/addHabit', upload.single('image'),  (req, res) => {
         } else {
             // Send a success response
             res.redirect('/habitList');
+        }
+    });
+});
+
+// route to delete Habit
+app.get('/deleteHabit/:id', (req, res) => {
+    const habitId = req.params.id;
+
+    connection.query('DELETE FROM products WHERE habitId = ?', [habitId], (error, results) => {
+        if (error) {
+            console.error("Error deleting habit:", error);
+            res.status(500).send('Error deleting habit');
+        } else {
+            // Send a success response
+            res.redirect('/habitlist');
+        }
+    });
+});
+
+//route to delete user
+app.get('/deleteUser/:id', (req, res) => {
+    const userId = req.params.id;
+    connection.query('DELETE FROM user WHERE userId = ?', [userId], (error, results) => {
+        if (error) {
+            console.error("Error deleting habit:", error);
+            res.status(500).send('Error deleting user');
+        } else {
+            // Send a success response
+            res.redirect('/userlist');
         }
     });
 });

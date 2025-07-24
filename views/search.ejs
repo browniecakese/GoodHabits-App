@@ -19,7 +19,7 @@
         <ul class="list-group">
             <% habits.forEach(habit => { %>
                 <li class="list-group-item">
-                    <strong><%= habit.name %></strong> - <%= habit.category %> - <%= habit.status %>
+                    <strong><%= habit.name %></strong> - <%= habit.type %> - <%= habit.date %> - <%= habit.description %> - <%= habit.feeling %> - <%= habit.image %>
                 </li>
             <% }) %>
         </ul>

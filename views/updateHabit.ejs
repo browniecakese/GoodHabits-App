@@ -46,7 +46,7 @@
 
         <div class="mb-3">
           <label for="date" class="form-label">Date</label>
-          <input type="date" class="form-control" id="date" name="date" value="<%= habit.date %>" required>
+          <input type="date" class="form-control" id="date" name="date" value="<%= habit.date.getFullYear() + '-' + String(habit.date.getMonth()+1).padStart(2, '0') + '-' + String(habit.date.getDate()).padStart(2, '0') %>" required>
         </div>
 
         <div class="mb-3">
@@ -55,7 +55,7 @@
         </div>
 
         <div class="mb-3">
-          <label for="feeling" class="form-label">feeling</label>
+          <label for="feeling" class="form-label">Feeling</label>
           <input type="text" class="form-control" id="feeling" name="feeling" value="<%= habit.feeling %>" required>
         </div>
 

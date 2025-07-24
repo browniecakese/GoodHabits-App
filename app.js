@@ -72,7 +72,7 @@ const validateRegistration = (req, res, next) => {
 
 //TO DO define routes
 
-router.get('/habits/search', (req, res) => {
+app.get('/habits/search', (req, res) => {
     const searchTerm = req.query.q;
 
     const sql = "SELECT * FROM habits WHERE name LIKE ?";

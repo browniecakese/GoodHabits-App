@@ -87,6 +87,42 @@ const validateRegistration = (req, res, next) => {
 //TO DO define routes
 
 
+//update 
+app.get('/updateHabit/:id',checkAuthenticated, checkAdmin, (req,res) => {
+    const habitId = req.params.id;
+    const sql = 'SELECT * FROM habit WHERE habitId = ?';
+    connection.query(sql , [habitId], (error, results) => {
+        if (error) throw error;
+        if (results.length > 0) {
+            res.render('updateHabit', { habit: results[0] });
+        } else {
+            res.status(404).send('Habit not found');
+        }
+    });
+});
+    
+app.post('/updateHabit/:id', upload.single('image'), (req, res) => {
+    const habitId = req.params.id;
+    const { name, quantity, price } = req.body;
+    let image  = req.body.currentImage; //retrieve current image filename
+    if (req.file) { //if new image is uploaded
+        image = req.file.filename; // set image to be new image filename
+    } 
+
+    const sql = 'UPDATE products SET productName = ? , quantity = ?, price = ?, image =? WHERE productId = ?';
+    // Insert the new product into the database
+    connection.query(sql, [name, quantity, price, image, productId], (error, results) => {
+        if (error) {
+            // Handle any error that occurs during the database operation
+            console.error("Error updating product:", error);
+            res.status(500).send('Error updating product');
+        } else {
+            // Send a success response
+            res.redirect('/inventory');
+        }
+    });
+});
+
 app.get('/deleteHabit/:id', (req, res) => {
     const habitId = req.params.id;
 

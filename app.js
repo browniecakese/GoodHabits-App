@@ -103,21 +103,18 @@ app.get('/updateHabit/:id',checkAuthenticated, checkAdmin, (req,res) => {
     
 app.post('/updateHabit/:id', upload.single('image'), (req, res) => {
     const habitId = req.params.id;
-    const { name, quantity, price } = req.body;
-    let image  = req.body.currentImage; //retrieve current image filename
-    if (req.file) { //if new image is uploaded
-        image = req.file.filename; // set image to be new image filename
+    const { habitname, feeling, description } = req.body;
+    let image  = req.body.currentImage; 
+    if (req.file) { 
+        image = req.file.filename; 
     } 
 
-    const sql = 'UPDATE products SET productName = ? , quantity = ?, price = ?, image =? WHERE productId = ?';
-    // Insert the new product into the database
-    connection.query(sql, [name, quantity, price, image, productId], (error, results) => {
+    const sql = 'UPDATE habit SET habitName = ? , feeling = ?, description = ?, image =? WHERE habitId = ?';
+    connection.query(sql, [habitname, feeling, description, image, habitId], (error, results) => {
         if (error) {
-            // Handle any error that occurs during the database operation
-            console.error("Error updating product:", error);
-            res.status(500).send('Error updating product');
+            console.error("Error updating habit:", error);
+            res.status(500).send('Error updating habit');
         } else {
-            // Send a success response
             res.redirect('/inventory');
         }
     });

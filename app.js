@@ -17,10 +17,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const connection = mysql.createConnection({
-    host: 'zwicym.h.filess.io',
-    user: 'C237T1_rockthemto',
-    password: '2ea3773010b897360db0a290675f29be40bffbba',
-    database: 'C237T1'
+    host: 'c237-boss.mysql.database.azure.com',
+    user: 'c237boss',
+    password: 'c237boss!',
+    database: 'c237_005_team1'
   });
 
 connection.connect((err) => {
@@ -49,6 +49,7 @@ app.use(session({
 }));
 
 app.use(flash());
+
 
 //TO DO add middleware to check if user is logged in
 const checkAuthenticated = (req, res, next) => {

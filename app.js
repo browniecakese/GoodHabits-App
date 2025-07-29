@@ -198,7 +198,7 @@ app.post('/addHabit', upload.single('image'),  (req, res) => {
         image = null;
     }
 
-    const sql = 'INSERT INTO habit (name, type, 'date', description, feelings, image) VALUES (?,?,?,?,?,?)';
+    const sql = 'INSERT INTO habit (name, type, `date`, description, feelings, image) VALUES (?,?,?,?,?,?)';
     // Insert the new habit into the database
     connection.query(sql , [name, type, date, description, feelings, image], (error, results) => {
         if (error) {

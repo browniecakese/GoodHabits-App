@@ -129,9 +129,6 @@ app.post('/login', (req, res) => {
         }
     });
 });
-app.get('/', (req,res) => {
-    res.render('index', {user:req.session.user});
-});
 
 app.get('/register', (req, res) => {
     res.render('register', { messages: req.flash('error'), formData: req.flash('formData')[0] });

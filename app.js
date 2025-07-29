@@ -190,7 +190,7 @@ app.get('/addHabit', checkAuthenticated, checkAdmin, (req, res) => {
 
 app.post('/addHabit', upload.single('image'),  (req, res) => {
     // Extract habit data from the request body
-    const { name, type, date, description, feelings, image} = req.body;
+    const { name, type, date, description, feelings} = req.body;
     let image;
     if (req.file) {
         image = req.file.filename; // Save only the filename

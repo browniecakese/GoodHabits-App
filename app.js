@@ -129,6 +129,9 @@ app.post('/login', (req, res) => {
         }
     });
 });
+app.get('/', (req,res) => {
+    res.render('index', {user:req.session.user});
+});
 
 app.get('/register', (req, res) => {
     res.render('register', { messages: req.flash('error'), formData: req.flash('formData')[0] });
@@ -235,7 +238,7 @@ app.post('/updateHabit/:id', upload.single('image'), (req, res) => {
             console.error("Error updating habit:", error);
             res.status(500).send('Error updating habit');
         } else {
-            res.redirect('/inventory');
+            res.redirect('/habitList');
         }
     });
 });

@@ -161,10 +161,10 @@ app.post('/register', validateRegistration, (req, res) => {
     });
 });
 
-app.get('/deleteHabit/:id', (req, res) => {
+app.get('/deleteHabit/:id', checkAuthenticated, (req, res) => {
     const habitId = req.params.id;
-
-    connection.query('DELETE FROM habit WHERE habitId = ?', [habitId], (error, results) => {
+    const userId = req.session.user.userId;
+    db.query('DELETE FROM habit WHERE habitId = ? AND userId = ?', [habitId, userId], (error, results) => {
         if (error) {
             console.error("Error deleting habit:", error);
             res.status(500).send('Error deleting habit');
@@ -195,15 +195,12 @@ app.get('/addHabit', (req, res) => {
     res.render('addHabit', {user: req.session.user } ); 
 });
 
-app.post('/addHabit', upload.single('image'),  (req, res) => {
-    const { name, type, date, description, feeling } = req.body;
+app.post('/addHabit', checkAuthenticated, upload.single('image'), (req, res) => {
+    const { name, type, date, description, feelings } = req.body;
+    const userId = req.session.user.userId;
     let image = req.file ? req.file.filename : null;
-
-    // Fix: If feeling is missing, set to empty string
-    const feelingValue = feeling ? feeling : '';
-
-    const sql = 'INSERT INTO habit (name, type, date, description, feelings, image) VALUES (?,?,?,?,?,?)';
-    db.query(sql , [name, type, date, description, feelingValue, image], (error, results) => {
+    const sql = 'INSERT INTO habit (name, type, date, description, feelings, image, userId) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    db.query(sql, [name, type, date, description, feelings, image, userId], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
             console.error("Error adding habit:", error);
@@ -215,10 +212,11 @@ app.post('/addHabit', upload.single('image'),  (req, res) => {
 });
 
 //update route
-app.get('/updateHabit/:id',checkAuthenticated, checkAdmin, (req,res) => {
+app.get('/updateHabit/:id', checkAuthenticated, (req, res) => {
     const habitId = req.params.id;
-    const sql = 'SELECT * FROM habit WHERE habitId = ?';
-    db.query(sql , [habitId], (error, results) => {
+    const userId = req.session.user.userId; // Adjust if your user id field is different
+    const sql = 'SELECT * FROM habit WHERE habitId = ? AND userId = ?';
+    db.query(sql, [habitId, userId], (error, results) => {
         if (error) throw error;
         if (results.length > 0) {
             res.render('updateHabit', { habit: results[0] });
@@ -228,28 +226,30 @@ app.get('/updateHabit/:id',checkAuthenticated, checkAdmin, (req,res) => {
     });
 });
     
-app.post('/updateHabit/:id', upload.single('image'), (req, res) => {
+app.post('/updateHabit/:id', checkAuthenticated, upload.single('image'), (req, res) => {
     const habitId = req.params.id;
-    const { name, type, date, description, feeling } = req.body;
-    let image  = req.body.currentImage; 
-    if (req.file) { 
-        image = req.file.filename; 
-    } 
+    const userId = req.session.user.userId;
+    const { name, type, date, description, feelings } = req.body;
+    let image = req.body.currentImage;
+    if (req.file) {
+        image = req.file.filename;
+    }
 
-    const sql = 'UPDATE habit SET name = ? , type = ?, date =?, description = ?, feeling = ?, image =? WHERE habitId = ?';
-    db.query(sql, [name, type, date, description, feeling, image, habitId], (error, results) => {
+    const sql = 'UPDATE habit SET name = ?, type = ?, date = ?, description = ?, feelings = ?, image = ? WHERE habitId = ? AND userId = ?';
+    db.query(sql, [name, type, date, description, feelings, image, habitId, userId], (error, results) => {
         if (error) {
             console.error("Error updating habit:", error);
             res.status(500).send('Error updating habit');
         } else {
-            res.redirect('/habitList');
+            res.redirect('/habitlist');
         }
     });
 });
 
 // Habit List route
 app.get('/habitlist', checkAuthenticated, (req, res) => {
-    db.query('SELECT * FROM habit', (err, results) => {
+    const userId = req.session.user.userId;
+    db.query('SELECT * FROM habit WHERE userId = ?', [userId], (err, results) => {
         if (err) {
             console.error('Error fetching habits:', err);
             return res.status(500).send('Database error');

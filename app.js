@@ -240,6 +240,14 @@ app.post('/updateHabit/:id', upload.single('image'), (req, res) => {
     });
 });
 
+app.get('/habitadmin', checkAuthenticated, checkAdmin, (req, res) => {
+    // Fetch data from MySQL
+    connection.query('SELECT * FROM users', (error, results) => {
+      if (error) throw error;
+      res.render('habitadmin', { user: results, user: req.session.user });
+    });
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 

@@ -118,10 +118,10 @@ app.post('/login', (req, res) => {
             // Successful login
             req.session.user = results[0]; 
             req.flash('success', 'Login successful!');
-            if(req.session.user.role == 'user')
-                res.redirect('/shopping');
+            if(req.session.user.role === 'user')
+                res.redirect('/habitlist');
             else
-                res.redirect('/inventory');
+                res.redirect('/habitadmin');
         } else {
             // Invalid credentials
             req.flash('error', 'Invalid email or password.');

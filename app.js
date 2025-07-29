@@ -50,6 +50,10 @@ app.use(session({
 
 app.use(flash());
 
+app.use((req, res, next) => {
+    res.locals.user = req.session.user || null;
+    next();
+});
 
 //TO DO add middleware to check if user is logged in
 const checkAuthenticated = (req, res, next) => {

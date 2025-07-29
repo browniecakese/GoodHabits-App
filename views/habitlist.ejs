@@ -16,22 +16,23 @@
           </button>
           <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav">
-              <% if (user.role === "admin") { %>
-                <li class="nav-item">
-                  <a class="nav-link" href="/habitadmin">user</a>
-                </li> 
-                <li class="nav-item">
-                  <a class="nav-link" href="/addHabit">Add new habit</a>
-                </li> 
-              <% } %>
+              <li class="nav-item">
+                <a class="nav-link" href="/habitlist">My Habits</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/addHabit">Add Habit</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/">GoodHabit App</a>
+              </li>
               <li class="nav-item">
                 <a class="nav-link" href="/logout">Logout</a>
-              </li> 
-              <li 
-                 <form action="/search" method="GET" class="mb-3">
-                  <input type="text" name="q" placeholder="Search by habit name..." class="form-control"  required>
-                  <button type="submit" class="btn btn-primary mt-2">Search</button>
-                 </form>
+              </li>
+              <li class="nav-item">
+                <form action="/search" method="GET" class="d-flex">
+                  <input type="text" name="q" placeholder="Search my habits..." class="form-control" required>
+                  <button type="submit" class="btn btn-primary ms-2">Search</button>
+                </form>
               </li>
             </ul>
           </div>
@@ -52,6 +53,12 @@
               <p><b>Date:</b><br> <%= habit.date %></p>
               <p><b>Description:</b><br> <%= habit.description %></p>
               <p><b>Feeling:</b><br> <%= habit.feelings %></p>
+              <form action="/habit/<%= habit._id %>/edit" method="GET" style="display:inline;">
+                <button type="submit" class="btn btn-warning btn-sm">Edit</button>
+              </form>
+              <form action="/habit/<%= habit._id %>?_method=DELETE" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+              </form>
               <hr>
             </div>
           <% }); %>

@@ -248,7 +248,7 @@ app.post('/updateHabit/:id', upload.single('image'), (req, res) => {
 });
 
 // Habit List route
-app.get('/habitList', checkAuthenticated, (req, res) => {
+app.get('/habitlist', checkAuthenticated, (req, res) => {
     db.query('SELECT * FROM habit', (err, results) => {
         if (err) {
             console.error('Error fetching habits:', err);

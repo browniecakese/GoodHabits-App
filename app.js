@@ -157,7 +157,7 @@ app.post('/register', validateRegistration, (req, res) => {
 app.get('/deleteHabit/:id', (req, res) => {
     const habitId = req.params.id;
 
-    connection.query('DELETE FROM products WHERE habitId = ?', [habitId], (error, results) => {
+    connection.query('DELETE FROM habit WHERE habitId = ?', [habitId], (error, results) => {
         if (error) {
             console.error("Error deleting habit:", error);
             res.status(500).send('Error deleting habit');
@@ -189,8 +189,8 @@ app.get('/addHabit', checkAuthenticated, checkAdmin, (req, res) => {
 });
 
 app.post('/addHabit', upload.single('image'),  (req, res) => {
-    // Extract product data from the request body
-    const { name, quantity, price} = req.body;
+    // Extract habit data from the request body
+    const { name, type, date, description, feelings} = req.body;
     let image;
     if (req.file) {
         image = req.file.filename; // Save only the filename
@@ -198,9 +198,9 @@ app.post('/addHabit', upload.single('image'),  (req, res) => {
         image = null;
     }
 
-    const sql = 'INSERT INTO products (productName, quantity, price, image) VALUES (?, ?, ?, ?)';
-    // Insert the new product into the database
-    connection.query(sql , [name, quantity, price, image], (error, results) => {
+    const sql = 'INSERT INTO habit (name, type, date, description, feelings, image) VALUES (?, ?, ?, ?, ? , ?)';
+    // Insert the new habit into the database
+    connection.query(sql , [name, type, date, description, feelings, image], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
             console.error("Error adding habit:", error);

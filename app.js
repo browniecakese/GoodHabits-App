@@ -184,7 +184,7 @@ app.get('/habitlist/search', (req, res) => {
 });
 
 // route to add habit
-app.get('/addHabit', checkAuthenticated, checkAdmin, (req, res) => {
+app.get('/addHabit', (req, res) => {
     res.render('addHabit', {user: req.session.user } ); 
 });
 
@@ -198,7 +198,7 @@ app.post('/addHabit', upload.single('image'),  (req, res) => {
         image = null;
     }
 
-    const sql = 'INSERT INTO habit (name, type, date, description, feelings, image) VALUES (?,?,?,?,?,?)';
+    const sql = 'INSERT INTO habit (name, type, 'date', description, feelings, image) VALUES (?,?,?,?,?,?)';
     // Insert the new habit into the database
     connection.query(sql , [name, type, date, description, feelings, image], (error, results) => {
         if (error) {

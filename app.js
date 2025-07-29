@@ -85,6 +85,11 @@ const validateRegistration = (req, res, next) => {
     next();
 };
 
+// Define routes
+app.get('/',  (req, res) => {
+    res.render('index', {user: req.session.user} );
+});
+
 //TO DO define routes
 app.get('/login', (req, res) => {
     res.render('login', { messages: req.flash('success'), errors: req.flash('error') });

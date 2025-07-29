@@ -35,10 +35,8 @@
     <table class="table table-hover small text-center">
       <thead>
           <tr>
+            <th width="100">User ID</th>
             <th width="100">User Name</th>
-            <th width="100">Product Image</th>
-            <th width="50">Quantity</th>
-            <th width="50">Price</th>
             <th width="50">Edit</th>
             <th width="50">Delete</th>
           </tr>
@@ -46,14 +44,9 @@
       <tbody>
         <% for(let i=0; i < products.length; i++) { %>
           <tr>
-            <td><a href="/product/<%= products[i].productId %>" ><%= products[i].productName %></a></td>
-            <td><img src = "images/<%= products[i].image %>" width="20%"></td>
-            <td><%= products[i].quantity %></td>
-            <td>$<%= products[i].price.toFixed(2) %></td>
-            <!-- Edit Link -->
-            <td><a href="/updateProduct/<%= products[i].productId %>">Edit</a></td>
+            <td><a href="/user/<%= user[i].userId %>" ><%= user[i].userName %></a></td>
             <!-- Delete Link -->
-            <td><a href="/deleteProduct/<%= products[i].productId %>" onclick="return confirm('Are you sure you want to delete this product?')">Delete</a></td>
+            <td><a href="/deleteUser/<%= user[i].userId %>" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a></td>
           </tr>
         <% } %>
       </tbody>

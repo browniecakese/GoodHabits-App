@@ -234,8 +234,8 @@ app.post('/updateHabit/:id', upload.single('image'), (req, res) => {
         image = req.file.filename; 
     } 
 
-    const sql = 'UPDATE habit SET name = ? , type = ?, date =?, description = ?, feeling = ?, image =? WHERE habitId = ?';
-    connection.query(sql, [name, type, date, description, feeling, image, habitId], (error, results) => {
+    const sql = 'UPDATE habit SET name = ? , type = ?, date =?, description = ?, feelings = ?, image =? WHERE habitId = ?';
+    connection.query(sql, [name, type, date, description, feelings, image, id], (error, results) => {
         if (error) {
             console.error("Error updating habit:", error);
             res.status(500).send('Error updating habit');
@@ -245,6 +245,18 @@ app.post('/updateHabit/:id', upload.single('image'), (req, res) => {
     });
 });
 
+//Habit List route
+app.get('/habitList', checkAuthenticated, (req, res) => {
+    connection.query('SELECT * FROM habit', (err, results) => {
+        if (err) {
+            console.error('Error fetching habits:', err);
+            return res.status(500).send('Database error');
+        }
+        res.render('habitlist', { user: req.session.user, habits: results });
+    });
+});
+
+//Habit Admin route
 app.get('/habitadmin', checkAuthenticated, checkAdmin, (req, res) => {
     // Fetch data from MySQL
     connection.query('SELECT * FROM users', (error, results) => {

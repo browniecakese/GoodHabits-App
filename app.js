@@ -163,7 +163,7 @@ app.get('/deleteHabit/:id', (req, res) => {
     });
 });
 
-app.get('/habits/search', (req, res) => {
+app.get('/habitlist/search', (req, res) => {
     const searchTerm = req.query.q;
 
     const sql = "SELECT * FROM habits WHERE name LIKE ?";

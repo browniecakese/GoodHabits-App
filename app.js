@@ -99,6 +99,11 @@ app.get('/login', (req, res) => {
     res.render('login', { messages: req.flash('success'), errors: req.flash('error') });
 });
 
+app.get('/logout', (req, res) => {
+    req.session.destroy();
+    res.redirect('/');
+});
+
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
 

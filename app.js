@@ -16,14 +16,14 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-const connection = mysql.createConnection({
+const db = mysql.createConnection({
     host: 'c237-boss.mysql.database.azure.com',
     user: 'c237boss',
     password: 'c237boss!',
     database: 'c237_005_team1'
-  });
+});
 
-connection.connect((err) => {
+db.connect((err) => {
     if (err) {
         console.error('Error connecting to MySQL:', err);
         return;
@@ -98,7 +98,7 @@ app.get('/',  (req, res) => {
 app.get('/login', (req, res) => {
     res.render('login', { messages: req.flash('success'), errors: req.flash('error') });
 });
-
+//Logout route
 app.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');
@@ -114,7 +114,7 @@ app.post('/login', (req, res) => {
     }
 
     const sql = 'SELECT * FROM users WHERE email = ? AND password = SHA1(?)';
-    connection.query(sql, [email, password], (err, results) => {
+    db.query(sql, [email, password], (err, results) => {
         if (err) {
             throw err;
         }
@@ -134,7 +134,7 @@ app.post('/login', (req, res) => {
         }
     });
 });
-
+//registration route
 app.get('/register', (req, res) => {
     res.render('register', { messages: req.flash('error'), formData: req.flash('formData')[0] });
 });
@@ -144,11 +144,18 @@ app.post('/register', validateRegistration, (req, res) => {
     const { username, email, password, address, contact, role } = req.body;
 
     const sql = 'INSERT INTO users (username, email, password, address, contact, role) VALUES (?, ?, SHA1(?), ?, ?, ?)';
-    connection.query(sql, [username, email, password, address, contact, role], (err, result) => {
+    db.query(sql, [username, email, password, address, contact, role], (err, result) => {
         if (err) {
-            throw err;
+            console.error("Registration error:", err);
+            if (err.code === 'ER_DUP_ENTRY') {
+                req.flash('error', 'Email is already registered.');
+                req.flash('formData', req.body);
+                return res.redirect('/register');
+            }
+            req.flash('error', 'Registration failed. Please try again.');
+            req.flash('formData', req.body);
+            return res.redirect('/register');
         }
-        console.log(result);
         req.flash('success', 'Registration successful! Please log in.');
         res.redirect('/login');
     });
@@ -183,31 +190,26 @@ app.get('/habitlist/search', (req, res) => {
     });
 });
 
-// route to add habit
+// add habit route
 app.get('/addHabit', (req, res) => {
     res.render('addHabit', {user: req.session.user } ); 
 });
 
 app.post('/addHabit', upload.single('image'),  (req, res) => {
-    // Extract habit data from the request body
-    const { name, type, date, description, feelings} = req.body;
-    let image;
-    if (req.file) {
-        image = req.file.filename; // Save only the filename
-    } else {
-        image = null;
-    }
+    const { name, type, date, description, feeling } = req.body;
+    let image = req.file ? req.file.filename : null;
+
+    // Fix: If feeling is missing, set to empty string
+    const feelingValue = feeling ? feeling : '';
 
     const sql = 'INSERT INTO habit (name, type, date, description, feelings, image) VALUES (?,?,?,?,?,?)';
-    // Insert the new habit into the database
-    connection.query(sql , [name, type, date, description, feelings, image], (error, results) => {
+    db.query(sql , [name, type, date, description, feelingValue, image], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
             console.error("Error adding habit:", error);
             res.status(500).send('Error adding habit');
         } else {
-            // Send a success response
-            res.redirect('/habitList');
+            res.redirect('/habitlist');
         }
     });
 });
@@ -216,7 +218,7 @@ app.post('/addHabit', upload.single('image'),  (req, res) => {
 app.get('/updateHabit/:id',checkAuthenticated, checkAdmin, (req,res) => {
     const habitId = req.params.id;
     const sql = 'SELECT * FROM habit WHERE habitId = ?';
-    connection.query(sql , [habitId], (error, results) => {
+    db.query(sql , [habitId], (error, results) => {
         if (error) throw error;
         if (results.length > 0) {
             res.render('updateHabit', { habit: results[0] });
@@ -234,8 +236,8 @@ app.post('/updateHabit/:id', upload.single('image'), (req, res) => {
         image = req.file.filename; 
     } 
 
-    const sql = 'UPDATE habit SET name = ? , type = ?, date =?, description = ?, feelings = ?, image =? WHERE habitId = ?';
-    connection.query(sql, [name, type, date, description, feelings, image, id], (error, results) => {
+    const sql = 'UPDATE habit SET name = ? , type = ?, date =?, description = ?, feeling = ?, image =? WHERE habitId = ?';
+    db.query(sql, [name, type, date, description, feeling, image, habitId], (error, results) => {
         if (error) {
             console.error("Error updating habit:", error);
             res.status(500).send('Error updating habit');
@@ -245,9 +247,9 @@ app.post('/updateHabit/:id', upload.single('image'), (req, res) => {
     });
 });
 
-//Habit List route
+// Habit List route
 app.get('/habitList', checkAuthenticated, (req, res) => {
-    connection.query('SELECT * FROM habit', (err, results) => {
+    db.query('SELECT * FROM habit', (err, results) => {
         if (err) {
             console.error('Error fetching habits:', err);
             return res.status(500).send('Database error');
@@ -256,10 +258,10 @@ app.get('/habitList', checkAuthenticated, (req, res) => {
     });
 });
 
-//Habit Admin route
+// Habit Admin route
 app.get('/habitadmin', checkAuthenticated, checkAdmin, (req, res) => {
     // Fetch data from MySQL
-    connection.query('SELECT * FROM users', (error, results) => {
+    db.query('SELECT * FROM users', (error, results) => {
       if (error) throw error;
       res.render('habitadmin', { user: results, user: req.session.user });
     });

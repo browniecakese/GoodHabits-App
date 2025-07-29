@@ -184,7 +184,7 @@ app.get('/habitlist/search', (req, res) => {
 });
 
 // route to add habit
-app.get('/addHabit', checkAuthenticated, checkAdmin, (req, res) => {
+app.get('/addHabit', (req, res) => {
     res.render('addHabit', {user: req.session.user } ); 
 });
 

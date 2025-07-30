@@ -312,19 +312,6 @@ app.post('/admin/updateHabit/:id', checkAuthenticated, checkAdmin, upload.single
     });
 });
 
-// Delete any habit
-app.get('deleteHabit/:id', checkAuthenticated, checkAdmin, (req, res) => {
-    const habitId = req.params.id;
-    db.query('DELETE FROM habit WHERE habitId = ?', [habitId], (error, results) => {
-        if (error) {
-            console.error("Error deleting habit:", error);
-            res.status(500).send('Error deleting habit');
-        } else {
-            res.redirect('/habitlist');
-        }
-    });
-});
-
 // Delete any user
 app.get('/admin/deleteUser/:id', checkAuthenticated, checkAdmin, (req, res) => {
     const userId = req.params.id;

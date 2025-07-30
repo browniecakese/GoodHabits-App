@@ -174,11 +174,12 @@ app.get('/deleteHabit/:id', checkAuthenticated, (req, res) => {
         }
     });
 });
+
+
 // Admin search users
 app.get('/admin/search_users', checkAdmin, (req, res) => {
     const searchTerm = req.query.q;
-
-    const sql = "SELECT * FROM users WHERE name LIKE ?";
+    const sql = "SELECT * FROM users WHERE username LIKE ?";
     db.query(sql, [`%${searchTerm}%`], (err, users) => {
         if (err) {
             console.error('User search failed:', err);
@@ -188,10 +189,11 @@ app.get('/admin/search_users', checkAdmin, (req, res) => {
     });
 });
 
+// Habit search for logged-in user
 app.get('/habitlist/search_habits', checkAuthenticated, (req, res) => {
     const searchTerm = req.query.q;
     const userId = req.session.user.userId;
-    const sql = "SELECT * FROM habit WHERE name LIKE ? AND habitId = ?";
+    const sql = "SELECT * FROM habit WHERE name LIKE ? AND userId = ?";
     db.query(sql, [`%${searchTerm}%`, userId], (err, results) => {
         if (err) {
             console.error('Search query failed:', err);

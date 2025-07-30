@@ -197,7 +197,7 @@ app.get('/habit/:id', checkAuthenticated, (req, res) => {
   const habitId = req.params.id;
 
   // Fetch data from MySQL based on the product ID
-  connection.query('SELECT * FROM habits WHERE habitId = ?', [habitId], (error, results) => {
+  db.query('SELECT * FROM habits WHERE habitId = ?', [habitId], (error, results) => {
       if (error) throw error;
 
       // Check if any habit with the given ID was found

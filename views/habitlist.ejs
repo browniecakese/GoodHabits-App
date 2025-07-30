@@ -58,9 +58,9 @@
               <form action="/habitlist<%= habit._id %>/updateHabit" method="GET" style="display:inline;">
                 <button type="submit" class="btn btn-warning btn-sm">Edit</button>
               </form>
-              <td>
-                <a href="/deleteHabit/<%= habit[i].habitId %>" onclick="return confirm('Are you sure you want to delete this habit?')">Delete</a>
-              </td>
+              <form action="/habitlist<%= habit._id %>/updateHabit" method="GET" style="display:inline;">
+                <button type="submit" class="btn btn-warning btn-sm">Delete</button>
+              </form>
               <hr>
             </div>
           <% }); %>

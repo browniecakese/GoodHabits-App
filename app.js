@@ -209,7 +209,7 @@ app.post('/addHabit', checkAuthenticated, upload.single('image'), (req, res) => 
     });
 });
 
-//update route
+// Edit own habit (GET)
 app.get('/updateHabit/:id', checkAuthenticated, (req, res) => {
     const habitId = req.params.id;
     const userId = req.session.user.userId;
@@ -233,11 +233,9 @@ app.post('/updateHabit/:id', checkAuthenticated, upload.single('image'), (req, r
     if (req.file) {
         image = req.file.filename;
     }
-
     const sql = 'UPDATE habit SET name = ?, type = ?, date = ?, description = ?, feelings = ?, image = ? WHERE habitId = ? AND userId = ?';
     db.query(sql, [name, type, date, description, feelings, image, habitId, userId], (error, results) => {
         if (error) {
-            console.error("Error updating habit:", error);
             res.status(500).send('Error updating habit');
         } else {
             res.redirect('/habitlist');
@@ -279,21 +277,6 @@ app.get('/habitadmin', checkAuthenticated, checkAdmin, (req, res) => {
             res.render('habitadmin', { user: req.session.user, users, habits });
         });
     });
-    
-});
-    
-app.get('/deleteHabit/:id', checkAuthenticated, checkAdmin, (req, res) => {
-    const habitId = req.params.id;
-    const userId = req.session.user.userId;
-    db.query('DELETE FROM habit WHERE habitId = ? AND userId = ?', [habitId, userId], (error, results) => {
-        if (error) {
-            console.error("Error deleting habit:", error);
-            res.status(500).send('Error deleting habit');
-        } else {
-            // Send a success response
-            res.redirect('/habitlist');
-        }
-    });
 });
 
 // Edit any habit (GET)
@@ -322,19 +305,6 @@ app.post('/admin/updateHabit/:id', checkAuthenticated, checkAdmin, upload.single
         if (error) {
             console.error("Error updating habit:", error);
             res.status(500).send('Error updating habit');
-        } else {
-            res.redirect('/habitadmin');
-        }
-    });
-});
-
-// Delete any habit for admin side
-app.get('/admin/deleteHabit/:id', checkAuthenticated, checkAdmin, (req, res) => {
-    const habitId = req.params.id;
-    db.query('DELETE FROM habit WHERE habitId = ?', [habitId], (error, results) => {
-        if (error) {
-            console.error("Error deleting habit:", error);
-            res.status(500).send('Error deleting habit');
         } else {
             res.redirect('/habitadmin');
         }

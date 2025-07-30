@@ -16,7 +16,7 @@
           </button>
           <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav">
-              <% if (user.role === "admin") { %>
+              <% if (user && user.role === "admin") { %>
                 <li class="nav-item">
                   <a class="nav-link" href="/habitlist">Habit List</a>
                 </li> 
@@ -27,13 +27,11 @@
               <li class="nav-item">
                 <a class="nav-link" href="/logout">Logout</a>
               </li> 
-               
-                 <form action="/search" method="GET" class="mb-3">
-                  <input type="text" name="q" placeholder="Search by habit name..." class="form-control"  required>
-                  <button type="submit" class="btn btn-primary mt-2">Search</button>
-                 </form>
-              
             </ul>
+             <form action="/search" method="GET" class="mb-3">
+               <input type="text" name="q" placeholder="Search by habit name..." class="form-control"  required>
+               <button type="submit" class="btn btn-primary mt-2">Search</button>
+            </form>
           </div>
         </div>
     </nav>

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <title>Supermarket App</title>
+  <title>Habit App</title>
 </head>
 <body>
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
@@ -36,28 +36,26 @@
       <thead>
           <tr>
             <th width="100">Habit Name</th>
-            <th width="100">Habit type</th>
+            <th width="100">Habit Type</th>
             <th width="100">Habit Image</th>
             <th width="100">Date</th>
-            <th width="50">Description</th>
-            <th width="50">Feelings</th>
+            <th width="150">Description</th>
+            <th width="100">Feelings</th>
             <th width="50">Edit</th>
             <th width="50">Delete</th>
           </tr>
       </thead>
       <tbody>
-        <% for(let i=0; i < Habits.length; i++) { %>
+        <% for(let i=0; i < habits.length; i++) { %>
           <tr>
-            <td><a href="/habit/<%= habits[i].habitId %>" ><%= habits[i].habitName %></a></td>
-            <td><img src = "images/<%= habits[i].image %>" width="20%"></td>
+            <td><a href="/habit/<%= habits[i].habitId %>"><%= habits[i].habitName %></a></td>
+            <td><%= habits[i].type %></td>
+            <td><img src="images/<%= habits[i].image %>" width="20%"></td>
             <td><%= habits[i].date %></td>
-            <td>$<%= habits[i].price.toFixed(2) %></td>
-            <td><%= habits[i].feeling %></td>
             <td><%= habits[i].description %></td>
-            <!-- Edit Link -->
+            <td><%= habits[i].feelings %></td>
             <td><a href="/updateHabit/<%= habits[i].habitId %>">Edit</a></td>
-            <!-- Delete Link -->
-            <td><a href="/deleteHabit/<%= habits[i].habitId %>" onclick="return confirm('Are you sure you want to delete this product?')">Delete</a></td>
+            <td><a href="/deleteHabit/<%= habits[i].habitId %>" onclick="return confirm('Are you sure you want to delete this habit?')">Delete</a></td>
           </tr>
         <% } %>
       </tbody>

@@ -28,8 +28,8 @@
               <a class="nav-link" href="/logout">Logout</a>
             </li> 
             <li class="nav-item">
-                <form action="/admin/search_users" method="GET" class="d-flex mb-3">
-                   <input type="text" name="q" class="form-control" placeholder="Search users by name or email" required>
+                <form action="/habitlist/search_habits" method="GET" class="d-flex mb-3">
+                   <input type="text" name="q" class="form-control" placeholder="Search habit by name" required>
                    <button type="submit" class="btn btn-primary ms-2">Search</button>
                 </form>
             </li>
@@ -56,7 +56,7 @@
       <tbody>
         <% for(let i=0; i < habits.length; i++) { %>
           <tr>
-            <td><a href="/habit/<%= habits[i].habitId %>"><%= habits[i].habitName %></a></td>
+            <td><a href="/habit/<%= habits[i].habitId %>"><%= habits[i].name %></a></td>
             <td><%= habits[i].type %></td>
             <td><img src="images/<%= habits[i].image %>" width="20%"></td>
             <td><a href="/updateHabit/<%= habits[i].habitId %>">Edit</a></td>

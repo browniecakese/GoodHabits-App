@@ -8,24 +8,18 @@
     <title>GoodHabit App</title>
 </head>
 <body>
-  <h2>Search Results for "<%= query %>"</h2>
+  
+<h2>Search Results for "<%= query %>"</h2>
   <% if (habits.length > 0) { %>
-    <% habits.forEach(habit => { %>
-      <div>
-        <p><strong>Name:</strong> <%= habit.name %></p>
-        <p><strong>Type:</strong> <%= habit.type %></p>
-        <p><strong>Date:</strong> <%= habit.date %></p>
-        <p><strong>Description:</strong> <%= habit.description %></p>
-        <p><strong>Feelings:</strong> <%= habit.feelings %></p>
-        <% if (habit.image) { %>
-          <img src="/images/<%= habit.image %>" width="150">
-        <% } %>
-        <hr>
-      </div>
-    <% }); %>
+    <ul>
+      <% habits.forEach(habit => { %>
+        <li>
+          <strong><%= habit.name %></strong> - <%= habit.type %>
+        </li>
+      <% }); %>
+    </ul>
   <% } else { %>
     <p>No habits found.</p>
   <% } %>
-  <a href="/habitlist">Back to My Habits</a>
 </body>
 </html>

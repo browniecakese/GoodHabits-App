@@ -124,9 +124,9 @@ app.post('/login', (req, res) => {
             req.session.user = results[0]; 
             req.flash('success', 'Login successful!');
             if(req.session.user.role === 'user')
-                res.redirect('/habitlist');
+                res.redirect('/');
             else
-                res.redirect('/habitadmin');
+                res.redirect('/');
         } else {
             // Invalid credentials
             req.flash('error', 'Invalid email or password.');

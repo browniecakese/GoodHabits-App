@@ -209,9 +209,24 @@ app.post('/addHabit', checkAuthenticated, upload.single('image'), (req, res) => 
     });
 });
 
-app.get('/product/:id', checkAuthenticated, (req, res) => {
-  // Extract the product ID from the request parameters
-  const productId = req.params.id;
+app.get('/habit/:id', checkAuthenticated, (req, res) => {
+  // Extract the habit ID from the request parameters
+  const habitId = req.params.id;
+
+  // Fetch data from MySQL based on the habit ID
+  connection.query('SELECT * FROM products WHERE habitId = ?', [habitId], (error, results) => {
+      if (error) throw error;
+
+      // Check if any habit with the given ID was found
+      if (results.length > 0) {
+          // Render HTML page with the habit data
+          res.render('product', { habit: results[0], user: req.session.user  });
+      } else {
+          // If no habit with the given ID was found, render a 404 page or handle it accordingly
+          res.status(404).send('habit not found');
+      }
+  });
+});
     
 //update route
 app.get('/updateHabit/:id', checkAuthenticated, (req, res) => {

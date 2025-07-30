@@ -75,9 +75,9 @@ const checkAdmin = (req, res, next) => {
 };
 
 const validateRegistration = (req, res, next) => {
-    const { username, email, password, address, contact, role } = req.body;
+    const { username, email, password, address, contact, role ,key1} = req.body;
 
-    if (!username || !email || !password || !address || !contact || !role) {
+    if (!username || !email || !password || !address || !contact || !role || !key1) {
         return res.status(400).send('All fields are required.');
     }
     
@@ -127,10 +127,26 @@ app.post('/login', (req, res) => {
                 res.redirect('/');
             else
                 res.redirect('/');
-        } else {
+        } 
+        else {
+            const sql = 'SELECT * FROM users WHERE email = ?';
+            db.query(sql, [email], (err, results) => {
+                if (err) {
+                    throw err;
+                }
+
+                if (results.length > 0) {
+                    // Successful login
+                    req.session.user = results[0]; 
+                    req.flash('error', 'Incorrect Password!');
+                    res.redirect('/login');
+                } 
+                else {req.flash('error', 'Invalid email!');
+                     res.redirect('/login');
+
+                }
             // Invalid credentials
-            req.flash('error', 'Invalid email or password.');
-            res.redirect('/login');
+            })
         }
     });
 });
@@ -141,10 +157,10 @@ app.get('/register', (req, res) => {
 
 app.post('/register', validateRegistration, (req, res) => {
 
-    const { username, email, password, address, contact, role } = req.body;
+    const { username, email, password, address, contact, role,key1 } = req.body;
 
-    const sql = 'INSERT INTO users (username, email, password, address, contact, role) VALUES (?, ?, SHA1(?), ?, ?, ?)';
-    db.query(sql, [username, email, password, address, contact, role], (err, result) => {
+    const sql = 'INSERT INTO users (username, email, password, address, contact, role, key1) VALUES (?, ?, SHA1(?), ?, ?, ?,?)';
+    db.query(sql, [username, email, password, address, contact, role, key1], (err, result) => {
         if (err) {
             console.error("Registration error:", err);
             if (err.code === 'ER_DUP_ENTRY') {
@@ -161,7 +177,28 @@ app.post('/register', validateRegistration, (req, res) => {
     });
 });
 
+// Forget Password Page
+app.get('/forgetPassword', (req, res) => {
+  res.render('forgetPassword', { messages: req.flash('error'), formData: req.flash('formData')[0] }) ; 
+});
 
+app.post('/forgetPassword', (req, res) => {
+    const { email, password, key1 } = req.body;
+    console.log("Submitted:", email, password, key1);  
+
+    const sql = 'UPDATE users SET password = SHA1(?) WHERE email = ? AND key1 = ?'
+    db.query(sql, [password, email, key1], (err, result) => {
+        if (err) throw err;
+
+        if (result.affectedRows > 0) {
+            req.flash('success', 'Password changed successfully!');
+            res.redirect('/login');
+        } else {
+            req.flash('error', 'Failed to change! Please check your email or key.');
+            res.redirect('/forgetPassword');
+        }
+    });
+});
 
 app.get('/deleteHabit/:id', checkAuthenticated, (req, res) => {
     const habitId = req.params.id;

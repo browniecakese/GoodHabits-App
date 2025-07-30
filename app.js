@@ -197,7 +197,7 @@ app.get('/habit/:id', checkAuthenticated, (req, res) => {
   const habitId = req.params.id;
 
   // Fetch data from MySQL based on the product ID
-  connection.query('SELECT * FROM habits WHERE habitId = ?', [habitId], (error, results) => {
+  db.query('SELECT * FROM habits WHERE habitId = ?', [habitId], (error, results) => {
       if (error) {
       console.error('Database error:', error);
       return res.status(500).send('Internal Server Error');

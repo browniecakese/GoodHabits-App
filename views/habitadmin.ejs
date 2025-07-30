@@ -66,6 +66,9 @@
           <tr>
             <td><%= u.userId %></td>
             <td><%= u.username %></td>
+            <td><%= u.email %></td>
+            <td><%= u.address %></td>
+            <td><%= u.contact %></td>
             <td><a href="/admin/editUser/<%= u.userId %>">Edit</a></td>
             <!-- Delete Link -->
             <td><a href="/admin/deleteUser/<%= u.userId %>" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a></td>

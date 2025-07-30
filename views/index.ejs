@@ -34,3 +34,22 @@
       </div>
     </nav>
 </body>
+
+<div class="container">
+    <p style="text-align: center;">
+        <% if (user) {%>
+          <% if (user.role === "admin") { %>
+            <br>
+            Back to <a href="/habitadmin">habitadmin</a>
+          <% } else { %>
+            <br>
+            Go to<a href="/habitlist">habitlist!</a>
+            <% } %>
+        <% } else { %>
+        <br>
+        <h1>Welcome to <b> GoodHabit App!</b></h1>
+        <br>
+        <a href = "/login" class="btn btn-primary ms-2" >Get started</a>
+        <% } %>
+    </p> 
+</div>

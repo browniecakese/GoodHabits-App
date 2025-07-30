@@ -40,10 +40,12 @@
         <% if (user) {%>
           <% if (user.role === "admin") { %>
             <br>
-            Back to <a href="/habitadmin">habitadmin</a>
+            <h1><p>Welcome, <b><%= user.username %> (<%= user.role %>)</b></p></h1>
+             Go to <a href="/habitadmin">habitadmin</a>
           <% } else { %>
             <br>
-            Go to<a href="/habitlist">habitlist!</a>
+            <h1><p>Welcome, <b><%= user.username %> (<%= user.role %>)</b></p></h1>
+             Go to<a href="/habitlist">habitlist!</a>
             <% } %>
         <% } else { %>
         <br>

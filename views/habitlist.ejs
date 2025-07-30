@@ -22,9 +22,11 @@
               <li class="nav-item">
                 <a class="nav-link" href="/addHabit">Add Habit</a>
               </li>
+              <% if (user && user.role === 'admin') { %>
               <li class="nav-item">
-                <a class="nav-link" href="/habitadmin">User List</a>
+                <a class="nav-link" href="/habitadmin">Admin Panel</a>
               </li>
+            <% } %>
               <li class="nav-item">
                 <a class="nav-link" href="/logout">Logout</a>
               </li>
@@ -53,12 +55,12 @@
               <p><b>Date:</b><br> <%= habit.date %></p>
               <p><b>Description:</b><br> <%= habit.description %></p>
               <p><b>Feeling:</b><br> <%= habit.feelings %></p>
-              <form action="/habit/<%= habit._id %>/updateHabit" method="GET" style="display:inline;">
+              <form action="/habitlist<%= habit._id %>/updateHabit" method="GET" style="display:inline;">
                 <button type="submit" class="btn btn-warning btn-sm">Edit</button>
               </form>
-              <form action="/habit/<%= habit._id %>?_method=DELETE" method="POST" style="display:inline;">
-                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-              </form>
+              <td>
+                <a href="/deleteHabit/<%= habit[i].habitId %>" onclick="return confirm('Are you sure you want to delete this habit?')">Delete</a>
+              </td>
               <hr>
             </div>
           <% }); %>

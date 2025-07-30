@@ -209,6 +209,10 @@ app.post('/addHabit', checkAuthenticated, upload.single('image'), (req, res) => 
     });
 });
 
+app.get('/product/:id', checkAuthenticated, (req, res) => {
+  // Extract the product ID from the request parameters
+  const productId = req.params.id;
+    
 //update route
 app.get('/updateHabit/:id', checkAuthenticated, (req, res) => {
     const habitId = req.params.id;

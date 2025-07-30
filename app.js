@@ -161,6 +161,8 @@ app.post('/register', validateRegistration, (req, res) => {
     });
 });
 
+
+
 app.get('/deleteHabit/:id', checkAuthenticated, (req, res) => {
     const habitId = req.params.id;
     const userId = req.session.user.userId;
@@ -187,7 +189,28 @@ app.get('/admin/search_users', checkAdmin, (req, res) => {
         }
         res.render('habitadmin', { user: req.session.user, users, query: searchTerm });
     });
+
 });
+
+app.get('/habit/:id', checkAuthenticated, (req, res) => {
+  // Extract the habit ID from the request parameters
+  const habitId = req.params.id;
+
+  // Fetch data from MySQL based on the product ID
+  connection.query('SELECT * FROM habits WHERE productId = ?', [habitId], (error, results) => {
+      if (error) throw error;
+
+      // Check if any product with the given ID was found
+      if (results.length > 0) {
+          // Render HTML page with the product data
+          res.render('habit', { habit: results[0], user: req.session.user  });
+      } else {
+          // If no habit with the given ID was found, render a 404 page or handle it accordingly
+          res.status(404).send('habit not found');
+      }
+  });
+});
+
 
 // Habit search for logged-in user
 app.get('/habitlist/search_habits', checkAuthenticated, (req, res) => {

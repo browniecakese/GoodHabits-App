@@ -329,38 +329,6 @@ app.get('/habitadmin', checkAuthenticated, checkAdmin, (req, res) => {
     });
 });
 
-// Edit any habit (GET)
-app.get('/admin/updateHabit/:id', checkAuthenticated, checkAdmin, (req, res) => {
-    const habitId = req.params.id;
-    db.query('SELECT * FROM habit WHERE habitId = ?', [habitId], (error, results) => {
-        if (error) throw error;
-        if (results.length > 0) {
-            res.render('updateHabit', { habit: results[0] });
-        } else {
-            res.status(404).send('Habit not found');
-        }
-    });
-});
-
-// Edit any habit (POST)
-app.post('/admin/updateHabit/:id', checkAuthenticated, checkAdmin, upload.single('image'), (req, res) => {
-    const habitId = req.params.id;
-    const { name, type, date, description, feelings } = req.body;
-    let image = req.body.currentImage;
-    if (req.file) {
-        image = req.file.filename;
-    }
-    const sql = 'UPDATE habit SET name = ?, type = ?, date = ?, description = ?, feelings = ?, image = ? WHERE habitId = ?';
-    db.query(sql, [name, type, date, description, feelings, image, habitId], (error, results) => {
-        if (error) {
-            console.error("Error updating habit:", error);
-            res.status(500).send('Error updating habit');
-        } else {
-            res.redirect('/habitadmin');
-        }
-    });
-});
-
 // Delete any user
 app.get('/admin/deleteUser/:id', checkAuthenticated, checkAdmin, (req, res) => {
     const userId = req.params.id;

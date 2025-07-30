@@ -56,7 +56,7 @@
               <p><b>Date:</b><br> <%= habit.date %></p>
               <p><b>Description:</b><br> <%= habit.description %></p>
               <p><b>Feeling:</b><br> <%= habit.feelings %></p>
-              <form action="/habitlist/<%= habit.habitId %>/updateHabit" method="GET" style="display:inline;">
+              <form action="/updateHabit<%= habit.habitId %>" method="GET" style="display:inline;">
                   <button type="submit" class="btn btn-warning btn-sm">Edit</button>
               </form>
               <form action="/deleteHabit/<%= habit.habitId %>" method="GET" style="display:inline;">

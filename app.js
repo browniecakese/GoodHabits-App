@@ -313,7 +313,7 @@ app.post('/admin/updateHabit/:id', checkAuthenticated, checkAdmin, upload.single
 });
 
 // Delete any habit
-app.get('deleteHabit/:id', (req, res) => {
+app.get('deleteHabit/:id', checkAuthenticated, checkAdmin, (req, res) => {
     const habitId = req.params.id;
     db.query('DELETE FROM habit WHERE habitId = ?', [habitId], (error, results) => {
         if (error) {
@@ -335,6 +335,35 @@ app.get('/admin/deleteUser/:id', checkAuthenticated, checkAdmin, (req, res) => {
         } else {
             res.redirect('/habitadmin');
         }
+    });
+});
+
+// Show edit user form
+app.get('/admin/editUser/:id', checkAuthenticated, checkAdmin, (req, res) => {
+    const userId = req.params.id;
+    db.query('SELECT * FROM users WHERE userId = ?', [userId], (err, results) => {
+        if (err) {
+            console.error("Error fetching user:", err);
+            return res.status(500).send('Database error');
+        }
+        if (results.length === 0) {
+            return res.status(404).send('User not found');
+        }
+        res.render('editUser', { userToEdit: results[0], user: req.session.user });
+    });
+});
+
+// Handle edit user form submission
+app.post('/admin/editUser/:id', checkAuthenticated, checkAdmin, (req, res) => {
+    const userId = req.params.id;
+    const { username, email, address, contact, role } = req.body;
+    const sql = 'UPDATE users SET username = ?, email = ?, address = ?, contact = ?, role = ? WHERE userId = ?';
+    db.query(sql, [username, email, address, contact, role, userId], (err, results) => {
+        if (err) {
+            console.error("Error updating user:", err);
+            return res.status(500).send('Database error');
+        }
+        res.redirect('/habitadmin');
     });
 });
 

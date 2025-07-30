@@ -47,8 +47,8 @@
       <thead>
           <tr>
             <th width="100">Habit Name</th>
-            <th width="100">Habit Image</th>
-            <th width="100">Date</th>
+            <th width="100">Type</th>
+            <th width="100">Image</th>
             <th width="50">Edit</th>
             <th width="50">Delete</th>
           </tr>
@@ -57,7 +57,6 @@
         <% for(let i=0; i < habits.length; i++) { %>
           <tr>
             <td><a href="/habit/<%= habits[i].habitId %>"><%= habits[i].habitName %></a></td>
-            <td><%= habits[i].name %></td>
             <td><%= habits[i].type %></td>
             <td><img src="images/<%= habits[i].image %>" width="20%"></td>
             <td><a href="/updateHabit/<%= habits[i].habitId %>">Edit</a></td>

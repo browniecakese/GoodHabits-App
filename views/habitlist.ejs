@@ -55,10 +55,10 @@
               <p><b>Date:</b><br> <%= habit.date %></p>
               <p><b>Description:</b><br> <%= habit.description %></p>
               <p><b>Feeling:</b><br> <%= habit.feelings %></p>
-              <form action="/habit/<%= habit._id %>/updateHabit" method="GET" style="display:inline;">
+              <form action="/habitlist/<%= habit._id %>/updateHabit" method="GET" style="display:inline;">
                 <button type="submit" class="btn btn-warning btn-sm">Edit</button>
               </form>
-              <form action="/habit/<%= habit._id %>?_method=DELETE" method="POST" style="display:inline;">
+              <form action="/habitlist/<%= habit._id %>?_method=DELETE" method="GET" style="display:inline;">
                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>
               </form>
               <hr>

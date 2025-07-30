@@ -16,17 +16,21 @@
           </button>
           <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav">
-              <% if (user.role === "admin") { %>
-                <li class="nav-item">
-                  <a class="nav-link" href="/inventory">Inventory</a>
-                </li> 
-                <li class="nav-item">
-                  <a class="nav-link" href="/addHabit">Add new habit</a>
-                </li> 
-              <% } %>
+              <li class="nav-item">
+                <a class="nav-link" href="/habitlist">My Habits</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/addHabit">Add Habit</a>
+              </li>
               <li class="nav-item">
                 <a class="nav-link" href="/logout">Logout</a>
-              </li> 
+              </li>
+              <li class="nav-item">
+                <form action="/search" method="GET" class="d-flex">
+                  <input type="text" name="q" placeholder="Search my habits..." class="form-control" required>
+                  <button type="submit" class="btn btn-primary ms-2">Search</button>
+                </form>
+              </li>
             </ul>
           </div>
         </div>
@@ -37,24 +41,33 @@
         <br>
         <div class="text-center"><h2>Habit Details</h2></div>
         <br>
-        <% if (habit) { %> 
+        <% if (habits && habits.length > 0) { %>
+          <% habits.forEach(function(habit) { %>
             <div>
-                <p><b>Habit Name:</b><br> <%= habit.name %></p>
-                <p><b>Image:</b><br> <img src = "../images/<%= habit.image %>" width="20%"></p>
-                <p><b>Type:</b><br> <%= habit.type %></p>
-                <p><b>Date:</b><br> <%= habit.date %></p>
-                <p><b>Description:</b><br> <%= habit.description %></p>
-                <p><b>Feeling:</b><br> <%= habit.feeling %></p>
+              <p><b>Habit Name:</b><br> <%= habit.name %></p>
+              <p><b>Image:</b><br> <img src="../images/<%= habit.image %>" width="20%"></p>
+              <p><b>Type:</b><br> <%= habit.type %></p>
+              <p><b>Date:</b><br> <%= habit.date %></p>
+              <p><b>Description:</b><br> <%= habit.description %></p>
+              <p><b>Feeling:</b><br> <%= habit.feelings %></p>
+              <form action="/habit/<%= habit._id %>/updateHabit" method="GET" style="display:inline;">
+                <button type="submit" class="btn btn-warning btn-sm">Edit</button>
+              </form>
+              <form action="/habit/<%= habit._id %>?_method=DELETE" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+              </form>
+              <hr>
             </div>
+          <% }); %>
         <% } else { %>
-            <p>No habit found.</p>
+          <p>No habits found.</p>
         <% } %>
         <% if (user.role === "admin") { %>
           <a href ="/habitlist">Back</a>
         <% } else { %>
-          <a href ="/habitlist">Back</a>
+          <a href ="/habitadmin">Back</a>
         <% } %>
     </div>
-    
+  
 </body>
 </html>

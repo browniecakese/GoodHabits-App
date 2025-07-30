@@ -32,8 +32,7 @@
     <h2 class="text-center mb-4">Update Habit</h2>
     
     <% if (habit) { %>
-      <form action="/updateHabit/<%= habit.habitId %>" method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
-        
+      <form action="/habit/<%= habit._id %>/updateHabit" method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
         <div class="mb-3">
           <label for="name" class="form-label">Habit Name</label>
           <input type="text" class="form-control" id="name" name="name" value="<%= habit.name %>" required>
@@ -46,7 +45,7 @@
 
         <div class="mb-3">
           <label for="date" class="form-label">Date</label>
-          <input type="date" class="form-control" id="date" name="date" value="<%= habit.date.getFullYear() + '-' + String(habit.date.getMonth()+1).padStart(2, '0') + '-' + String(habit.date.getDate()).padStart(2, '0') %>" required>
+          <input type="date" class="form-control" id="date" name="date" value="<%= habit.date ? habit.date.toISOString().slice(0,10) : '' %>" required>
         </div>
 
         <div class="mb-3">
@@ -55,8 +54,8 @@
         </div>
 
         <div class="mb-3">
-          <label for="feeling" class="form-label">Feeling</label>
-          <input type="text" class="form-control" id="feeling" name="feeling" value="<%= habit.feeling %>" required>
+          <label for="feelings" class="form-label">Feeling</label>
+          <input type="text" class="form-control" id="feelings" name="feelings" value="<%= habit.feelings %>" required>
         </div>
 
         <div class="mb-3">
@@ -72,7 +71,7 @@
 
         <div class="d-grid gap-2">
           <button type="submit" class="btn btn-primary">Update Habit</button>
-          <a href="/inventory" class="btn btn-secondary">Back to Inventory</a>
+          <a href="/habitlist" class="btn btn-secondary">Back to My Habits</a>
         </div>
       </form>
     <% } else { %>

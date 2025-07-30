@@ -16,14 +16,14 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-const connection = mysql.createConnection({
+const db = mysql.createConnection({
     host: 'c237-boss.mysql.database.azure.com',
     user: 'c237boss',
     password: 'c237boss!',
     database: 'c237_005_team1'
-  });
+});
 
-connection.connect((err) => {
+db.connect((err) => {
     if (err) {
         console.error('Error connecting to MySQL:', err);
         return;
@@ -98,7 +98,7 @@ app.get('/',  (req, res) => {
 app.get('/login', (req, res) => {
     res.render('login', { messages: req.flash('success'), errors: req.flash('error') });
 });
-
+//Logout route
 app.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');
@@ -114,7 +114,7 @@ app.post('/login', (req, res) => {
     }
 
     const sql = 'SELECT * FROM users WHERE email = ? AND password = SHA1(?)';
-    connection.query(sql, [email, password], (err, results) => {
+    db.query(sql, [email, password], (err, results) => {
         if (err) {
             throw err;
         }
@@ -134,7 +134,7 @@ app.post('/login', (req, res) => {
         }
     });
 });
-
+//registration route
 app.get('/register', (req, res) => {
     res.render('register', { messages: req.flash('error'), formData: req.flash('formData')[0] });
 });
@@ -144,20 +144,27 @@ app.post('/register', validateRegistration, (req, res) => {
     const { username, email, password, address, contact, role } = req.body;
 
     const sql = 'INSERT INTO users (username, email, password, address, contact, role) VALUES (?, ?, SHA1(?), ?, ?, ?)';
-    connection.query(sql, [username, email, password, address, contact, role], (err, result) => {
+    db.query(sql, [username, email, password, address, contact, role], (err, result) => {
         if (err) {
-            throw err;
+            console.error("Registration error:", err);
+            if (err.code === 'ER_DUP_ENTRY') {
+                req.flash('error', 'Email is already registered.');
+                req.flash('formData', req.body);
+                return res.redirect('/register');
+            }
+            req.flash('error', 'Registration failed. Please try again.');
+            req.flash('formData', req.body);
+            return res.redirect('/register');
         }
-        console.log(result);
         req.flash('success', 'Registration successful! Please log in.');
         res.redirect('/login');
     });
 });
 
-app.get('/deleteHabit/:id', (req, res) => {
+app.get('/deleteHabit/:id', checkAuthenticated, (req, res) => {
     const habitId = req.params.id;
-
-    connection.query('DELETE FROM habit WHERE habitId = ?', [habitId], (error, results) => {
+    const userId = req.session.user.userId;
+    db.query('DELETE FROM habit WHERE habitId = ? AND userId = ?', [habitId, userId], (error, results) => {
         if (error) {
             console.error("Error deleting habit:", error);
             res.status(500).send('Error deleting habit');
@@ -168,55 +175,46 @@ app.get('/deleteHabit/:id', (req, res) => {
     });
 });
 
-app.get('/habitlist/search', (req, res) => {
+app.get('/habitlist/search', checkAuthenticated, (req, res) => {
     const searchTerm = req.query.q;
-
-    const sql = "SELECT * FROM habits WHERE name LIKE ?";
-    const values = [`%${searchTerm}%`];
-
-    db.query(sql, values, (err, results) => {
+    const userId = req.session.user.userId;
+    const sql = "SELECT * FROM habit WHERE name LIKE ? AND userId = ?";
+    db.query(sql, [`%${searchTerm}%`, userId], (err, results) => {
         if (err) {
             console.error('Search query failed:', err);
             return res.status(500).send('Database error');
         }
-        res.render('habits', { habits: results });
+        res.render('habitlist', { user: req.session.user, habits: results });
     });
 });
 
-// route to add habit
-app.get('/addHabit', checkAuthenticated, checkAdmin, (req, res) => {
+// add habit route
+app.get('/addHabit', (req, res) => {
     res.render('addHabit', {user: req.session.user } ); 
 });
 
-app.post('/addHabit', upload.single('image'),  (req, res) => {
-    // Extract habit data from the request body
-    const { name, type, date, description, feelings} = req.body;
-    let image;
-    if (req.file) {
-        image = req.file.filename; // Save only the filename
-    } else {
-        image = null;
-    }
-
-    const sql = 'INSERT INTO habit (name, type, date, description, feelings, image) VALUES (?, ?, ?, ?, ? , ?)';
-    // Insert the new habit into the database
-    connection.query(sql , [name, type, date, description, feelings, image], (error, results) => {
+app.post('/addHabit', checkAuthenticated, upload.single('image'), (req, res) => {
+    const { name, type, date, description, feelings } = req.body;
+    const userId = req.session.user.userId;
+    let image = req.file ? req.file.filename : null;
+    const sql = 'INSERT INTO habit (name, type, date, description, feelings, image, userId) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    db.query(sql, [name, type, date, description, feelings, image, userId], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
             console.error("Error adding habit:", error);
             res.status(500).send('Error adding habit');
         } else {
-            // Send a success response
-            res.redirect('/habitList');
+            res.redirect('/habitlist');
         }
     });
 });
 
 //update route
-app.get('/updateHabit/:id',checkAuthenticated, checkAdmin, (req,res) => {
+app.get('/updateHabit/:id', checkAuthenticated, (req, res) => {
     const habitId = req.params.id;
-    const sql = 'SELECT * FROM habit WHERE habitId = ?';
-    connection.query(sql , [habitId], (error, results) => {
+    const userId = req.session.user.userId; // Adjust if your user id field is different
+    const sql = 'SELECT * FROM habit WHERE habitId = ? AND userId = ?';
+    db.query(sql, [habitId, userId], (error, results) => {
         if (error) throw error;
         if (results.length > 0) {
             res.render('updateHabit', { habit: results[0] });
@@ -226,30 +224,117 @@ app.get('/updateHabit/:id',checkAuthenticated, checkAdmin, (req,res) => {
     });
 });
     
-app.post('/updateHabit/:id', upload.single('image'), (req, res) => {
+app.post('/updateHabit/:id', checkAuthenticated, upload.single('image'), (req, res) => {
     const habitId = req.params.id;
-    const { name, type, date, description, feeling } = req.body;
-    let image  = req.body.currentImage; 
-    if (req.file) { 
-        image = req.file.filename; 
-    } 
+    const userId = req.session.user.userId;
+    const { name, type, date, description, feelings } = req.body;
+    let image = req.body.currentImage;
+    if (req.file) {
+        image = req.file.filename;
+    }
 
-    const sql = 'UPDATE habit SET name = ? , type = ?, date =?, description = ?, feeling = ?, image =? WHERE habitId = ?';
-    connection.query(sql, [name, type, date, description, feeling, image, habitId], (error, results) => {
+    const sql = 'UPDATE habit SET name = ?, type = ?, date = ?, description = ?, feelings = ?, image = ? WHERE habitId = ? AND userId = ?';
+    db.query(sql, [name, type, date, description, feelings, image, habitId, userId], (error, results) => {
         if (error) {
             console.error("Error updating habit:", error);
             res.status(500).send('Error updating habit');
         } else {
-            res.redirect('/habitList');
+            res.redirect('/habitlist');
         }
     });
 });
 
+// Habit List route
+app.get('/habitlist', checkAuthenticated, (req, res) => {
+    const userId = req.session.user.userId;
+    db.query('SELECT * FROM habit WHERE userId = ?', [userId], (err, results) => {
+        if (err) {
+            console.error('Error fetching habits:', err);
+            return res.status(500).send('Database error');
+        }
+        res.render('habitlist', { user: req.session.user, habits: results });
+    });
+});
+
+// Habit Admin route
 app.get('/habitadmin', checkAuthenticated, checkAdmin, (req, res) => {
-    // Fetch data from MySQL
-    connection.query('SELECT * FROM users', (error, results) => {
-      if (error) throw error;
-      res.render('habitadmin', { user: results, user: req.session.user });
+    // Get all users
+    db.query('SELECT * FROM users', (userErr, users) => {
+        if (userErr) {
+            console.error('Error fetching users:', userErr);
+            return res.status(500).send('Database error');
+        }
+        // Get all habits with user info
+        const sql = `
+            SELECT habit.*, users.username, users.email, users.userId
+            FROM habit
+            JOIN users ON habit.userId = users.userId
+        `;
+        db.query(sql, (habitErr, habits) => {
+            if (habitErr) {
+                console.error('Error fetching all habits:', habitErr);
+                return res.status(500).send('Database error');
+            }
+            res.render('habitadmin', { user: req.session.user, users, habits });
+        });
+    });
+});
+
+// Edit any habit (GET)
+app.get('/admin/updateHabit/:id', checkAuthenticated, checkAdmin, (req, res) => {
+    const habitId = req.params.id;
+    db.query('SELECT * FROM habit WHERE habitId = ?', [habitId], (error, results) => {
+        if (error) throw error;
+        if (results.length > 0) {
+            res.render('updateHabit', { habit: results[0] });
+        } else {
+            res.status(404).send('Habit not found');
+        }
+    });
+});
+
+// Edit any habit (POST)
+app.post('/admin/updateHabit/:id', checkAuthenticated, checkAdmin, upload.single('image'), (req, res) => {
+    const habitId = req.params.id;
+    const { name, type, date, description, feelings } = req.body;
+    let image = req.body.currentImage;
+    if (req.file) {
+        image = req.file.filename;
+    }
+    const sql = 'UPDATE habit SET name = ?, type = ?, date = ?, description = ?, feelings = ?, image = ? WHERE habitId = ?';
+    db.query(sql, [name, type, date, description, feelings, image, habitId], (error, results) => {
+        if (error) {
+            console.error("Error updating habit:", error);
+            res.status(500).send('Error updating habit');
+        } else {
+            res.redirect('/habitadmin');
+        }
+    });
+});
+
+// Delete any habit
+app.get('/admin/deleteHabit/:id', checkAuthenticated, checkAdmin, (req, res) => {
+    const habitId = req.params.id;
+    db.query('DELETE FROM habit WHERE habitId = ?', [habitId], (error, results) => {
+        if (error) {
+            console.error("Error deleting habit:", error);
+            res.status(500).send('Error deleting habit');
+        } else {
+            res.redirect('/habitadmin');
+        }
+    });
+});
+
+// Delete any user
+app.get('/admin/deleteUser/:id', checkAuthenticated, checkAdmin, (req, res) => {
+    const userId = req.params.id;
+    db.query('DELETE FROM users WHERE userId = ?', [userId], (error, results) => {
+        if (error) {
+            console.error("Error deleting user:", error);
+            res.status(500).send('Error deleting user');
+        } else {
+            res.redirect('/habitadmin');
+        }
     });
 });
 

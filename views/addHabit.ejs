@@ -26,6 +26,19 @@
           <li class="nav-item">
             <a class="nav-link" href="/logout">Logout</a>
           </li> 
+
+   <!-- Example: Show admin link only for admins -->
+          <% if (user && user.role === 'admin') { %>
+            <li class="nav-item">
+                <a class="nav-link" href="/habitadmin">Admin Panel</a>
+            </li>
+          <% } %>
+          <li class="nav-item">
+              <form action="/search" method="GET" class="d-flex">
+                <input type="text" name="q" placeholder="Search my habits..." class="form-control" required>
+                <button type="submit" class="btn btn-primary ms-2">Search</button>
+              </form>
+          </li>
         </ul>
       </div>
     </div>
@@ -44,8 +57,8 @@
       <div class="mb-3">
        <label for="type" class="form-label">Habit type</label>
          <select class="form-control" id="type" name="type" required>
-            <option value="indoor">Indoor</option>
-            <option value="outdoor">Outdoor</option>
+            <option value="Indoor">Indoor</option>
+            <option value="Outdoor">Outdoor</option>
         </select>
        </div>
 
@@ -63,9 +76,9 @@
       <div class="mb-4">
               <label for="feeling" class="form-label">Feelings</label>
                  <select class="form-control" id="feelings" name="feelings" required>
-                    <option value="happy">Happy</option>
-                    <option value="neutral">Neutral</option>
-                    <option value="sad">Sad</option>
+                    <option value="Happy">Happy</option>
+                    <option value="Neutral">Neutral</option>
+                    <option value="Sad">Sad</option>
                   </select>
       </div>
 

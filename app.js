@@ -107,7 +107,6 @@ app.get('/logout', (req, res) => {
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
 
-    // Validate email and password
     if (!email || !password) {
         req.flash('error', 'All fields are required.');
         return res.redirect('/login');
@@ -120,36 +119,28 @@ app.post('/login', (req, res) => {
         }
 
         if (results.length > 0) {
-            // Successful login
             req.session.user = results[0]; 
             req.flash('success', 'Login successful!');
-            if(req.session.user.role === 'user')
-                res.redirect('/');
-            else
-                res.redirect('/');
-        } 
-        else {
-            const sql = 'SELECT * FROM users WHERE email = ?';
-            db.query(sql, [email], (err, results) => {
+            return res.redirect('/');
+        } else {
+            // Check if email exists
+            const checkEmailSql = 'SELECT * FROM users WHERE email = ?';
+            db.query(checkEmailSql, [email], (err, emailResults) => {
                 if (err) {
                     throw err;
                 }
 
-                if (results.length > 0) {
-                    // Successful login
-                    req.session.user = results[0]; 
-                    req.flash('error', 'Incorrect Password!');
-                    res.redirect('/login');
-                } 
-                else {req.flash('error', 'Invalid email!');
-                     res.redirect('/login');
-
+                if (emailResults.length > 0) {
+                    req.flash('error', 'Incorrect password!');
+                } else {
+                    req.flash('error', 'Invalid email!');
                 }
-            // Invalid credentials
-            })
+                return res.redirect('/login');
+            });
         }
     });
 });
+
 //registration route
 app.get('/register', (req, res) => {
     res.render('register', { messages: req.flash('error'), formData: req.flash('formData')[0] });

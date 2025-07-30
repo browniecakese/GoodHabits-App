@@ -55,11 +55,12 @@
         <% } else { %>
             <p>No Habit found.</p>
         <% } %>
-        <% if (user.role === "admin") { %>
-          <a href ="/habitadmin">Back</a>
-        <a href ="/habitlist">Back</a>
-          <a href ="/">Back</a>
-        <% } %>
+        <% if (user && user.role && user.role.toLowerCase() === "admin") { %>
+  <a href="/habitadmin" class="btn btn-secondary m-1">Back to Admin</a>
+  <a href="/habitlist" class="btn btn-secondary m-1">Back to List</a>
+  <a href="/" class="btn btn-secondary m-1">Home</a>
+<% } %>
+
     </div>
     
 </body>

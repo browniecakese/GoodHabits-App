@@ -222,7 +222,7 @@ app.get('/habitlist/search_habits', checkAuthenticated, (req, res) => {
             console.error('Search query failed:', err);
             return res.status(500).send('Database error');
         }
-        res.render('search_habits', { user: req.session.user, habits: results, query: searchTerm });
+        res.render('habitlist', { user: req.session.user, habits: results, query: searchTerm });
     });
 });
 

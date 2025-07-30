@@ -174,8 +174,19 @@ app.get('/deleteHabit/:id', checkAuthenticated, (req, res) => {
         }
     });
 });
-
-app.get('/habitlist/search', checkAuthenticated, (req, res) => {
+// Admin search users
+app.get('/admin/search_users', checkAuthenticated, checkAdmin, (req, res) => {
+    const searchTerm = req.query.q;
+    const sql = 'SELECT * FROM users WHERE username LIKE ? OR email LIKE ?';
+    db.query(sql, [`%${searchTerm}%`, `%${searchTerm}%`], (err, results) => {
+        if (err) {
+            console.error('Error searching users:', err);
+            return res.status(500).send('Database error');
+        }
+        res.render('search_users', { user: req.session.user, users: results, query: searchTerm });
+    });
+});
+app.get('/habitlist/search_habits', checkAuthenticated, (req, res) => {
     const searchTerm = req.query.q;
     const userId = req.session.user.userId;
     const sql = "SELECT * FROM habit WHERE name LIKE ? AND userId = ?";
@@ -184,9 +195,10 @@ app.get('/habitlist/search', checkAuthenticated, (req, res) => {
             console.error('Search query failed:', err);
             return res.status(500).send('Database error');
         }
-        res.render('habitlist', { user: req.session.user, habits: results });
+        res.render('search_habits', { user: req.session.user, habits: results, query: searchTerm });
     });
 });
+
 
 // add habit route
 app.get('/addHabit', (req, res) => {

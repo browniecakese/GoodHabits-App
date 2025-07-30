@@ -42,18 +42,20 @@
           <% if (user.role === "admin") { %>
             <br>
             <h1><p>Welcome, <b><%= user.username %> (<%= user.role %>)</b></p></h1>
-             Go to <a href="/habitadmin">habitadmin</a>
+             Go to <a href="/habitadmin">Admin Panel</a>
           <% } else { %>
             <br>
             <h1><p>Welcome, <b><%= user.username %> (<%= user.role %>)</b></p></h1>
-             Go to <a href="/habitlist">habitlist!</a>
+             Go to <a href="/habitlist">Habit List!</a>
             <% } %>
         <% } else { %>
-        <br>
-        <h1>Welcome to <b> GoodHabit App!</b></h1>
-        <br>
-        <a href = "/login" class="btn btn-primary ms-2" >Get started</a><br><br>
-        <img src = "https://retirementorship.com/wp-content/uploads/2022/08/Build-Good-Habits.jpg" alt="good_habits" width=650px height=500px>
-        <% } %>
+          <br>
+            <div class="text-center">
+              <h1>Welcome to <b> GoodHabit App!</b></h1>
+              <br>
+              <a href = "/login" class="btn btn-primary ms-2" >Get started</a><br><br>
+              <img src = "https://retirementorship.com/wp-content/uploads/2022/08/Build-Good-Habits.jpg" alt="good_habits" width=650px height=500px>
+             </div>
+         <% } %>
     </p> 
 </div>

@@ -209,10 +209,10 @@ app.post('/addHabit', checkAuthenticated, upload.single('image'), (req, res) => 
     });
 });
 
-//update route
+// Edit own habit (GET)
 app.get('/updateHabit/:id', checkAuthenticated, (req, res) => {
     const habitId = req.params.id;
-    const userId = req.session.user.userId; // Adjust if your user id field is different
+    const userId = req.session.user.userId;
     const sql = 'SELECT * FROM habit WHERE habitId = ? AND userId = ?';
     db.query(sql, [habitId, userId], (error, results) => {
         if (error) throw error;
@@ -223,7 +223,8 @@ app.get('/updateHabit/:id', checkAuthenticated, (req, res) => {
         }
     });
 });
-    
+
+// Edit own habit (POST)
 app.post('/updateHabit/:id', checkAuthenticated, upload.single('image'), (req, res) => {
     const habitId = req.params.id;
     const userId = req.session.user.userId;
@@ -325,7 +326,7 @@ app.get('/admin/deleteUser/:id', checkAuthenticated, checkAdmin, (req, res) => {
     });
 });
 
-// Show edit user form
+// Edit user as an admin (GET)
 app.get('/admin/editUser/:id', checkAuthenticated, checkAdmin, (req, res) => {
     const userId = req.params.id;
     db.query('SELECT * FROM users WHERE userId = ?', [userId], (err, results) => {
@@ -340,7 +341,7 @@ app.get('/admin/editUser/:id', checkAuthenticated, checkAdmin, (req, res) => {
     });
 });
 
-// Handle edit user form submission
+// Edit user as an admin (POST)
 app.post('/admin/editUser/:id', checkAuthenticated, checkAdmin, (req, res) => {
     const userId = req.params.id;
     const { username, email, address, contact, role } = req.body;

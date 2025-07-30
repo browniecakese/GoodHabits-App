@@ -25,6 +25,12 @@
             <li class="nav-item">
               <a class="nav-link" href="/logout">Logout</a>
             </li> 
+            <!-- Example: Show admin link only for admins -->
+            <% if (user && user.role === 'admin') { %>
+              <li class="nav-item">
+                <a class="nav-link" href="/habitadmin">Admin Panel</a>
+              </li>
+            <% } %>
           </ul>
         </div>
       </div>

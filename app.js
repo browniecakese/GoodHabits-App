@@ -185,7 +185,7 @@ app.get('/admin/search_users', checkAdmin, (req, res) => {
             console.error('User search failed:', err);
             return res.status(500).send('Database error');
         }
-        res.render('search_users', { user: req.session.user, users, query: searchTerm });
+        res.render('habitadmin', { user: req.session.user, users, query: searchTerm });
     });
 });
 

@@ -39,8 +39,11 @@
         </div>
 
         <div class="mb-3">
-          <label for="type" class="form-label">Type</label>
-          <input type="text" class="form-control" id="type" name="type" value="<%= habit.type %>" required>
+          <label for="type" class="form-label">Habit Type</label>
+            <select class="form-control" id="type" name="type" value="<%= habit.type %>" required>
+              <option value="Indoor">Indoor</option>
+              <option value="Outdoor">Outdoor</option>
+            </select>
         </div>
 
         <div class="mb-3">
@@ -53,9 +56,13 @@
           <input type="text" class="form-control" id="description" name="description" value="<%= habit.description %>" required>
         </div>
 
-        <div class="mb-3">
-          <label for="feelings" class="form-label">Feeling</label>
-          <input type="text" class="form-control" id="feelings" name="feelings" value="<%= habit.feelings %>" required>
+        <div class="mb-4">
+              <label for="feeling" class="form-label">Feelings</label>
+                <select class="form-control" id="feelings" name="feelings" value="<%= habit.feelings %>" required>
+                    <option value="Happy">Happy</option>
+                    <option value="Neutral">Neutral</option>
+                    <option value="Sad">Sad</option>
+                </select>
         </div>
 
         <div class="mb-3">

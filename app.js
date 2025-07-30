@@ -175,18 +175,16 @@ app.get('/deleteHabit/:id', checkAuthenticated, (req, res) => {
     });
 });
 
-app.get('/habitlist/search', (req, res) => {
+app.get('/habitlist/search', checkAuthenticated, (req, res) => {
     const searchTerm = req.query.q;
-
-    const sql = "SELECT * FROM habit WHERE name LIKE ?";
-    const values = [`%${searchTerm}%`];
-
-    db.query(sql, values, (err, results) => {
+    const userId = req.session.user.userId;
+    const sql = "SELECT * FROM habit WHERE name LIKE ? AND userId = ?";
+    db.query(sql, [`%${searchTerm}%`, userId], (err, results) => {
         if (err) {
             console.error('Search query failed:', err);
             return res.status(500).send('Database error');
         }
-        res.render('habit', { habit: results });
+        res.render('habitlist', { user: req.session.user, habits: results });
     });
 });
 
@@ -260,10 +258,75 @@ app.get('/habitlist', checkAuthenticated, (req, res) => {
 
 // Habit Admin route
 app.get('/habitadmin', checkAuthenticated, checkAdmin, (req, res) => {
-    // Fetch data from MySQL
-    db.query('SELECT * FROM users', (error, results) => {
-      if (error) throw error;
-      res.render('habitadmin', { user: results, user: req.session.user });
+    const sql = `
+        SELECT habit.*, users.username, users.email
+        FROM habit
+        JOIN users ON habit.userId = users.userId
+    `;
+    db.query(sql, (error, results) => {
+        if (error) {
+            console.error('Error fetching all habits:', error);
+            return res.status(500).send('Database error');
+        }
+        res.render('habitadmin', { user: req.session.user, habits: results });
+    });
+});
+
+// Edit any habit (GET)
+app.get('/admin/updateHabit/:id', checkAuthenticated, checkAdmin, (req, res) => {
+    const habitId = req.params.id;
+    db.query('SELECT * FROM habit WHERE habitId = ?', [habitId], (error, results) => {
+        if (error) throw error;
+        if (results.length > 0) {
+            res.render('updateHabit', { habit: results[0] });
+        } else {
+            res.status(404).send('Habit not found');
+        }
+    });
+});
+
+// Edit any habit (POST)
+app.post('/admin/updateHabit/:id', checkAuthenticated, checkAdmin, upload.single('image'), (req, res) => {
+    const habitId = req.params.id;
+    const { name, type, date, description, feelings } = req.body;
+    let image = req.body.currentImage;
+    if (req.file) {
+        image = req.file.filename;
+    }
+    const sql = 'UPDATE habit SET name = ?, type = ?, date = ?, description = ?, feelings = ?, image = ? WHERE habitId = ?';
+    db.query(sql, [name, type, date, description, feelings, image, habitId], (error, results) => {
+        if (error) {
+            console.error("Error updating habit:", error);
+            res.status(500).send('Error updating habit');
+        } else {
+            res.redirect('/habitadmin');
+        }
+    });
+});
+
+// Delete any habit
+app.get('/admin/deleteHabit/:id', checkAuthenticated, checkAdmin, (req, res) => {
+    const habitId = req.params.id;
+    db.query('DELETE FROM habit WHERE habitId = ?', [habitId], (error, results) => {
+        if (error) {
+            console.error("Error deleting habit:", error);
+            res.status(500).send('Error deleting habit');
+        } else {
+            res.redirect('/habitadmin');
+        }
+    });
+});
+
+// Delete any user
+app.get('/admin/deleteUser/:id', checkAuthenticated, checkAdmin, (req, res) => {
+    const userId = req.params.id;
+    db.query('DELETE FROM users WHERE userId = ?', [userId], (error, results) => {
+        if (error) {
+            console.error("Error deleting user:", error);
+            res.status(500).send('Error deleting user');
+        } else {
+            res.redirect('/habitadmin');
+        }
     });
 });
 

@@ -282,6 +282,21 @@ app.get('/habitadmin', checkAuthenticated, checkAdmin, (req, res) => {
             res.render('habitadmin', { user: req.session.user, users, habits });
         });
     });
+    
+});
+    
+app.get('/deleteHabit/:id', checkAuthenticated, checkAdmin, (req, res) => {
+    const habitId = req.params.id;
+    const userId = req.session.user.userId;
+    db.query('DELETE FROM habit WHERE habitId = ? AND userId = ?', [habitId, userId], (error, results) => {
+        if (error) {
+            console.error("Error deleting habit:", error);
+            res.status(500).send('Error deleting habit');
+        } else {
+            // Send a success response
+            res.redirect('/habitlist');
+        }
+    });
 });
 
 // Edit any habit (GET)
@@ -312,6 +327,20 @@ app.post('/admin/updateHabit/:id', checkAuthenticated, checkAdmin, upload.single
             res.status(500).send('Error updating habit');
         } else {
             res.redirect('/habitadmin');
+        }
+    });
+});
+
+app.get('/deleteHabit/:id', checkAuthenticated, checkAdmin, (req, res) => {
+    const habitId = req.params.id;
+    const adminId = req.session.user.userId;
+    db.query('DELETE FROM habit WHERE habitId = ? AND userId = ?', [habitId, userId], (error, results) => {
+        if (error) {
+            console.error("Error deleting habit:", error);
+            res.status(500).send('Error deleting habit');
+        } else {
+            // Send a success response
+            res.redirect('/habitlist');
         }
     });
 });

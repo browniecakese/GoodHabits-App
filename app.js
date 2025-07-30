@@ -258,17 +258,25 @@ app.get('/habitlist', checkAuthenticated, (req, res) => {
 
 // Habit Admin route
 app.get('/habitadmin', checkAuthenticated, checkAdmin, (req, res) => {
-    const sql = `
-        SELECT habit.*, users.username, users.email
-        FROM habit
-        JOIN users ON habit.userId = users.userId
-    `;
-    db.query(sql, (error, results) => {
-        if (error) {
-            console.error('Error fetching all habits:', error);
+    // Get all users
+    db.query('SELECT * FROM users', (userErr, users) => {
+        if (userErr) {
+            console.error('Error fetching users:', userErr);
             return res.status(500).send('Database error');
         }
-        res.render('habitadmin', { user: req.session.user, habits: results });
+        // Get all habits with user info
+        const sql = `
+            SELECT habit.*, users.username, users.email, users.userId
+            FROM habit
+            JOIN users ON habit.userId = users.userId
+        `;
+        db.query(sql, (habitErr, habits) => {
+            if (habitErr) {
+                console.error('Error fetching all habits:', habitErr);
+                return res.status(500).send('Database error');
+            }
+            res.render('habitadmin', { user: req.session.user, users, habits });
+        });
     });
 });
 

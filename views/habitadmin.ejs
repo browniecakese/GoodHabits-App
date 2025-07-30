@@ -45,13 +45,15 @@
           </tr>
       </thead>
       <tbody>
-        <% for(let i=0; i < user.length; i++) { %>
+        <% users.forEach(function(u) { %>
           <tr>
-            <td><a href="/user/<%= user[i].userId %>" ><%= user[i].userName %></a></td>
+            <td><%= u.userId %></td>
+            <td><%= u.username %></td>
+            <td><a href="/admin/editUser/<%= u.userId %>">Edit</a></td>
             <!-- Delete Link -->
-            <td><a href="/deleteUser/<%= user[i].userId %>" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a></td>
+            <td><a href="/admin/deleteUser/<%= u.userId %>" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a></td>
           </tr>
-        <% } %>
+        <% }); %>
       </tbody>
     </table>
   </div>

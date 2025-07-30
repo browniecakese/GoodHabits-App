@@ -205,6 +205,7 @@ app.get('/habit/:id', checkAuthenticated, (req, res) => {
 
       // Check if any habit with the given ID was found
       if (results.length > 0) {
+        const habit = results[0];
           // Render HTML page with the product data
           if (habit.date) {
             habit.date = new Date(habit.date).toLocaleDateString('en-US', {
@@ -213,7 +214,7 @@ app.get('/habit/:id', checkAuthenticated, (req, res) => {
               day: 'numeric'
             });
           }
-          res.render('habit', { habit: results[0], user: req.session.user  });
+          res.render('habit', { habit, user: req.session.user });
       } else {
           // If no habit with the given ID was found, render a 404 page or handle it accordingly
           res.status(404).send('habit not found');

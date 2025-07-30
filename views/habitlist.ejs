@@ -23,6 +23,9 @@
                 <a class="nav-link" href="/addHabit">Add Habit</a>
               </li>
               <li class="nav-item">
+                <a class="nav-link" href="/habitadmin">User List</a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link" href="/logout">Logout</a>
               </li>
               <li class="nav-item">
@@ -63,9 +66,9 @@
           <p>No habits found.</p>
         <% } %>
         <% if (user.role === "admin") { %>
-          <a href ="/habitlist">Back</a>
-        <% } else { %>
           <a href ="/habitadmin">Back</a>
+        <% } else { %>
+          <a href ="/habitlist">Back</a>
         <% } %>
     </div>
   

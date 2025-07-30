@@ -174,19 +174,33 @@ app.get('/deleteHabit/:id', checkAuthenticated, (req, res) => {
         }
     });
 });
+// Admin search users
+app.get('/admin/search_users', checkAdmin, (req, res) => {
+    const searchTerm = req.query.q;
 
-app.get('/habitlist/search', checkAuthenticated, (req, res) => {
+    const sql = "SELECT * FROM users WHERE name LIKE ?";
+    db.query(sql, [`%${searchTerm}%`], (err, users) => {
+        if (err) {
+            console.error('User search failed:', err);
+            return res.status(500).send('Database error');
+        }
+        res.render('search_users', { user: req.session.user, users, query: searchTerm });
+    });
+});
+
+app.get('/habitlist/search_habits', checkAuthenticated, (req, res) => {
     const searchTerm = req.query.q;
     const userId = req.session.user.userId;
-    const sql = "SELECT * FROM habit WHERE name LIKE ? AND userId = ?";
+    const sql = "SELECT * FROM habit WHERE name LIKE ? AND habitId = ?";
     db.query(sql, [`%${searchTerm}%`, userId], (err, results) => {
         if (err) {
             console.error('Search query failed:', err);
             return res.status(500).send('Database error');
         }
-        res.render('habitlist', { user: req.session.user, habits: results });
+        res.render('search_habits', { user: req.session.user, habits: results, query: searchTerm });
     });
 });
+
 
 // add habit route
 app.get('/addHabit', (req, res) => {
@@ -209,10 +223,10 @@ app.post('/addHabit', checkAuthenticated, upload.single('image'), (req, res) => 
     });
 });
 
-//update route
+// Edit own habit (GET)
 app.get('/updateHabit/:id', checkAuthenticated, (req, res) => {
     const habitId = req.params.id;
-    const userId = req.session.user.userId; // Adjust if your user id field is different
+    const userId = req.session.user.userId;
     const sql = 'SELECT * FROM habit WHERE habitId = ? AND userId = ?';
     db.query(sql, [habitId, userId], (error, results) => {
         if (error) throw error;
@@ -223,7 +237,8 @@ app.get('/updateHabit/:id', checkAuthenticated, (req, res) => {
         }
     });
 });
-    
+
+// Edit own habit (POST)
 app.post('/updateHabit/:id', checkAuthenticated, upload.single('image'), (req, res) => {
     const habitId = req.params.id;
     const userId = req.session.user.userId;
@@ -232,11 +247,9 @@ app.post('/updateHabit/:id', checkAuthenticated, upload.single('image'), (req, r
     if (req.file) {
         image = req.file.filename;
     }
-
     const sql = 'UPDATE habit SET name = ?, type = ?, date = ?, description = ?, feelings = ?, image = ? WHERE habitId = ? AND userId = ?';
     db.query(sql, [name, type, date, description, feelings, image, habitId, userId], (error, results) => {
         if (error) {
-            console.error("Error updating habit:", error);
             res.status(500).send('Error updating habit');
         } else {
             res.redirect('/habitlist');
@@ -325,7 +338,7 @@ app.get('/admin/deleteUser/:id', checkAuthenticated, checkAdmin, (req, res) => {
     });
 });
 
-// Show edit user form
+// Edit user as an admin (GET)
 app.get('/admin/editUser/:id', checkAuthenticated, checkAdmin, (req, res) => {
     const userId = req.params.id;
     db.query('SELECT * FROM users WHERE userId = ?', [userId], (err, results) => {
@@ -340,7 +353,7 @@ app.get('/admin/editUser/:id', checkAuthenticated, checkAdmin, (req, res) => {
     });
 });
 
-// Handle edit user form submission
+// Edit user as an admin (POST)
 app.post('/admin/editUser/:id', checkAuthenticated, checkAdmin, (req, res) => {
     const userId = req.params.id;
     const { username, email, address, contact, role } = req.body;

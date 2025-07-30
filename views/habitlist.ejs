@@ -22,6 +22,12 @@
             <li class="nav-item">
               <a class="nav-link" href="/logout">Logout</a>
             </li> 
+            <li class="nav-item">
+                <form action="/admin/search_users" method="GET" class="d-flex mb-3">
+                   <input type="text" name="q" class="form-control" placeholder="Search users by name or email" required>
+                   <button type="submit" class="btn btn-primary ms-2">Search</button>
+                </form>
+            </li>
           </ul>
         </div>
       </div>

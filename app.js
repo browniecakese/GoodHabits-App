@@ -175,21 +175,23 @@ app.get('/deleteHabit/:id', checkAuthenticated, (req, res) => {
     });
 });
 // Admin search users
-app.get('/admin/search_users', checkAuthenticated, checkAdmin, (req, res) => {
+app.get('/admin/search_users', checkAdmin, (req, res) => {
     const searchTerm = req.query.q;
-    const sql = 'SELECT * FROM users WHERE username LIKE ? OR email LIKE ?';
-    db.query(sql, [`%${searchTerm}%`, `%${searchTerm}%`], (err, results) => {
+
+    const sql = "SELECT * FROM users WHERE name LIKE ?";
+    db.query(sql, [`%${searchTerm}%`], (err, users) => {
         if (err) {
-            console.error('Error searching users:', err);
+            console.error('User search failed:', err);
             return res.status(500).send('Database error');
         }
-        res.render('search_users', { user: req.session.user, users: results, query: searchTerm });
+        res.render('search_users', { user: req.session.user, users, query: searchTerm });
     });
 });
+
 app.get('/habitlist/search_habits', checkAuthenticated, (req, res) => {
     const searchTerm = req.query.q;
     const userId = req.session.user.userId;
-    const sql = "SELECT * FROM habit WHERE name LIKE ? AND userId = ?";
+    const sql = "SELECT * FROM habit WHERE name LIKE ? AND habitId = ?";
     db.query(sql, [`%${searchTerm}%`, userId], (err, results) => {
         if (err) {
             console.error('Search query failed:', err);

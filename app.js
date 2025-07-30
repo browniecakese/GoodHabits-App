@@ -313,7 +313,7 @@ app.post('/admin/updateHabit/:id', checkAuthenticated, checkAdmin, upload.single
 });
 
 // Delete any habit
-app.get('deleteHabit/:id', (req, res) => {
+app.get('deleteHabit/:id', checkAuthenticated, checkAdmin, (req, res) => {
     const habitId = req.params.id;
     db.query('DELETE FROM habit WHERE habitId = ?', [habitId], (error, results) => {
         if (error) {
